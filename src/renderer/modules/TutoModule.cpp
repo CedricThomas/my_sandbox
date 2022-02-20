@@ -4,17 +4,17 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "renderer/modules/TriangleModule.hpp"
+#include "renderer/modules/TutoModule.hpp"
 #include "renderer/Renderer.hpp"
 #include "utils/ResourcesManager.hpp"
 #include "utils/stb_image.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 
-TriangleModule::TriangleModule() : RenderableModule("TriangleModule"), _vao(0), _vbo(0), _texture1(0), _texture2(0),
-                                   _shader() {}
+TutoModule::TutoModule() : RenderableModule("TutoModule"), _vao(0), _vbo(0), _texture1(0), _texture2(0),
+                           _shader() {}
 
-void TriangleModule::onInit(const Provider &provider) {
+void TutoModule::onInit(const Provider &provider) {
     RenderableModule::onInit(provider);
 
     // build and compile our shader program
@@ -71,8 +71,6 @@ void TriangleModule::onInit(const Provider &provider) {
 
     glGenVertexArrays(1, &_vao);
     glGenBuffers(1, &_vbo);
-    GLuint buffer;
-    glGenBuffers(-1, &buffer); // -1 throws an error according to http://docs.gl/gl4/glGenBuffers
 
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(_vao);
@@ -155,14 +153,14 @@ void TriangleModule::onInit(const Provider &provider) {
 
 }
 
-void TriangleModule::onInput(const Provider &provider) {
+void TutoModule::onInput(const Provider &provider) {
     RenderableModule::onInput(provider);
     auto window = provider.provide<GLFWwindow>("window");
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
 
-void TriangleModule::onRender(const Provider &provider) {
+void TutoModule::onRender(const Provider &provider) {
     RenderableModule::onRender(provider);
     auto config = provider.provide<Renderer>("renderer")->getConfig();
 
@@ -212,7 +210,7 @@ void TriangleModule::onRender(const Provider &provider) {
     glBindVertexArray(0);
 }
 
-void TriangleModule::onCleanup(const Provider &provider) {
+void TutoModule::onCleanup(const Provider &provider) {
     RenderableModule::onCleanup(provider);
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------

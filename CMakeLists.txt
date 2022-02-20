@@ -18,8 +18,8 @@ set(SOURCE_FILES
         include/renderer/RendererException.hpp
         src/renderer/RenderableModule.cpp
         include/renderer/RenderableModule.hpp
-        src/renderer/modules/TriangleModule.cpp
-        include/renderer/modules/TriangleModule.hpp
+        src/renderer/modules/TutoModule.cpp
+        include/renderer/modules/TutoModule.hpp
         include/utils/Provider.hpp
         include/utils/Shader.hpp
         src/utils/Shader.cpp

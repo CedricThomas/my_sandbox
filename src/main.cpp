@@ -1,7 +1,7 @@
 
 #include "spdlog/spdlog.h"
 #include "renderer/Renderer.hpp"
-#include "renderer/modules/TriangleModule.hpp"
+#include "renderer/modules/TutoModule.hpp"
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -17,7 +17,7 @@ int main()
         "Application",
         "../resources",
     });
-    renderer.registerModule(std::make_unique<TriangleModule>());
+    renderer.registerModule(std::make_unique<TutoModule>());
     renderer.start();
     return 0;
 }

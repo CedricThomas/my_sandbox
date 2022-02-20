@@ -2,16 +2,16 @@
 // Created by arzad on 17/01/2022.
 //
 
-#ifndef APP_TRIANGLEMODULE_HPP
-#define APP_TRIANGLEMODULE_HPP
+#ifndef APP_TUTOMODULE_HPP
+#define APP_TUTOMODULE_HPP
 
 
 #include "renderer/RenderableModule.hpp"
 #include "utils/Shader.hpp"
 
-class TriangleModule: public RenderableModule {
+class TutoModule: public RenderableModule {
 public:
-    TriangleModule();
+    TutoModule();
 
     void onInit(const Provider &provider) override;
 
@@ -29,4 +29,4 @@ public:
 };
 
 
-#endif //APP_TRIANGLEMODULE_HPP
+#endif //APP_TUTOMODULE_HPP
