@@ -46,6 +46,8 @@ public:
 
 private:
     static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+    static void debug_callback(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message,
+                  const void *userParam);
 
     void init();
 
@@ -57,6 +59,7 @@ private:
     std::list<std::unique_ptr<RenderableModule>> _modules;
     GLFWwindow *_window;
     Provider _provider;
+
 };
 
 

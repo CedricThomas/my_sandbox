@@ -6,7 +6,7 @@
 
 #include <utility>
 
-RendererException::RendererException(std::string reason): _reason(std::move(reason)) {}
+RendererException::RendererException(std::string reason) : _reason(std::move(reason)) {}
 
 const char *RendererException::what() const noexcept {
     return _reason.c_str();
