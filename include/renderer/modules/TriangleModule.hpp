@@ -25,7 +25,6 @@ public:
     GLuint _vbo;
     GLuint _texture1;
     GLuint _texture2;
-    GLuint _ebo;
     Shader _shader;
 };
 

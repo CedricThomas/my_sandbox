@@ -42,6 +42,8 @@ public:
 
     void start();
 
+    const RendererConfig &getConfig() const;
+
 private:
     static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
