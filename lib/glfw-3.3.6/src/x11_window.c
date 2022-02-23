@@ -625,7 +625,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     window->x11.parent = _glfw.x11.root;
     window->x11.handle = XCreateWindow(_glfw.x11.display,
                                        _glfw.x11.root,
-                                       0, 0,   // Position
+                                       0, 0,   // _position
                                        width, height,
                                        0,      // Border width
                                        depth,  // Color depth

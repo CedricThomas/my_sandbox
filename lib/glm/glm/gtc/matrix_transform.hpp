@@ -422,8 +422,8 @@ namespace glm
 
 	/// Build a look at view matrix based on the default handedness.
 	///
-	/// @param eye Position of the camera
-	/// @param center Position where the camera is looking at
+	/// @param eye _position of the camera
+	/// @param center _position where the camera is looking at
 	/// @param up Normalized up vector, how the camera is oriented. Typically (0, 0, 1)
 	/// @see gtc_matrix_transform
 	/// @see - frustum(T const & left, T const & right, T const & bottom, T const & top, T const & nearVal, T const & farVal) frustum(T const & left, T const & right, T const & bottom, T const & top, T const & nearVal, T const & farVal)
@@ -435,8 +435,8 @@ namespace glm
 
 	/// Build a right handed look at view matrix.
 	///
-	/// @param eye Position of the camera
-	/// @param center Position where the camera is looking at
+	/// @param eye _position of the camera
+	/// @param center _position where the camera is looking at
 	/// @param up Normalized up vector, how the camera is oriented. Typically (0, 0, 1)
 	/// @see gtc_matrix_transform
 	/// @see - frustum(T const & left, T const & right, T const & bottom, T const & top, T const & nearVal, T const & farVal) frustum(T const & left, T const & right, T const & bottom, T const & top, T const & nearVal, T const & farVal)
@@ -448,8 +448,8 @@ namespace glm
 
 	/// Build a left handed look at view matrix.
 	///
-	/// @param eye Position of the camera
-	/// @param center Position where the camera is looking at
+	/// @param eye _position of the camera
+	/// @param center _position where the camera is looking at
 	/// @param up Normalized up vector, how the camera is oriented. Typically (0, 0, 1)
 	/// @see gtc_matrix_transform
 	/// @see - frustum(T const & left, T const & right, T const & bottom, T const & top, T const & nearVal, T const & farVal) frustum(T const & left, T const & right, T const & bottom, T const & top, T const & nearVal, T const & farVal)

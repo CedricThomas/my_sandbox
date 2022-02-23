@@ -2,12 +2,12 @@
 // Created by arzad on 17/01/2022.
 //
 
-#include <glad/glad.h>
+#include "lib/glad.h"
 #include <GLFW/glfw3.h>
 #include "renderer/modules/TutoModule.hpp"
 #include "renderer/Renderer.hpp"
-#include "utils/ResourcesManager.hpp"
-#include "utils/stb_image.h"
+#include "lib/utils/ResourcesManager.hpp"
+#include "lib/stb_image.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 
@@ -21,8 +21,8 @@ void TutoModule::onInit(const Provider &provider) {
     // ------------------------------------
     auto resourcesManager = provider.provide<ResourcesManager>("resourcesManager");
     _shader = Shader(
-            resourcesManager->getResourcePath("triangle.vert"),
-            resourcesManager->getResourcePath("triangle.frag")
+            resourcesManager->getResourcePath("shaders/tuto.vert"),
+            resourcesManager->getResourcePath("shaders/tuto.frag")
     );
 
     float vertices[] = {
@@ -101,7 +101,7 @@ void TutoModule::onInit(const Provider &provider) {
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char *data = stbi_load(resourcesManager->getResourcePath("wall.jpg").c_str(), &width, &height, &nrChannels,
+    unsigned char *data = stbi_load(resourcesManager->getResourcePath("textures/wall.jpg").c_str(), &width, &height, &nrChannels,
                                     0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -133,7 +133,7 @@ void TutoModule::onInit(const Provider &provider) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // load image, create texture and generate mipmaps
-    data = stbi_load(resourcesManager->getResourcePath("awesomeface.png").c_str(), &width, &height, &nrChannels, 0);
+    data = stbi_load(resourcesManager->getResourcePath("textures/awesomeface.png").c_str(), &width, &height, &nrChannels, 0);
     if (data) {
         // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);

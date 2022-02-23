@@ -6,7 +6,7 @@
 #define APP_RENDERABLEMODULE_HPP
 
 #include <string>
-#include "utils/Provider.hpp"
+#include "lib/utils/Provider.hpp"
 
 class Renderer;
 

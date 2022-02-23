@@ -5,10 +5,10 @@
 #ifndef APP_RENDERER_HPP
 #define APP_RENDERER_HPP
 
-#include "glad/glad.h"
+#include "lib/glad.h"
 #include "GLFW/glfw3.h"
 #include "RenderableModule.hpp"
-#include "utils/Provider.hpp"
+#include "lib/utils/Provider.hpp"
 
 #include <map>
 #include <string>
@@ -45,9 +45,13 @@ public:
     const RendererConfig &getConfig() const;
 
 private:
+    static void
+    debug_callback(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message,
+                   const void *userParam);
+
     static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-    static void debug_callback(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message,
-                  const void *userParam);
+//    void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+//    void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
     void init();
 
@@ -58,7 +62,7 @@ private:
     RendererConfig _config;
     std::list<std::unique_ptr<RenderableModule>> _modules;
     GLFWwindow *_window;
-    Provider _provider;
+    Provider &_provider;
 
 };
 

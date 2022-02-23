@@ -2,6 +2,9 @@
 #include "spdlog/spdlog.h"
 #include "renderer/Renderer.hpp"
 #include "renderer/modules/TutoModule.hpp"
+#include "server/Server.hpp"
+#include "world/World.hpp"
+
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -17,7 +20,16 @@ int main()
         "Application",
         "../resources",
     });
-    renderer.registerModule(std::make_unique<TutoModule>());
-    renderer.start();
+//    renderer.registerModule(std::make_unique<TutoModule>());
+//    renderer.start();
+
+    Server server;
+    World world;
+
+    server.Observable<int>::addObserver((Observer<int> *)&world);
+    server.Observable<float>::addObserver((Observer<float> *)&world);
+    server.start();
+
+
     return 0;
 }

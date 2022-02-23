@@ -8,9 +8,9 @@ include_directories(
 
 # Add main.cpp file of project root directory as source file
 set(SOURCE_FILES
-        include/KHR/khrplatform.h
-        include/glad/glad.h
-        src/renderer/glad.c
+        include/lib/khrplatform.h
+        include/lib/glad.h
+        src/lib/glad.c
         src/main.cpp
         src/renderer/Renderer.cpp
         include/renderer/Renderer.hpp
@@ -20,13 +20,22 @@ set(SOURCE_FILES
         include/renderer/RenderableModule.hpp
         src/renderer/modules/TutoModule.cpp
         include/renderer/modules/TutoModule.hpp
-        include/utils/Provider.hpp
-        include/utils/Shader.hpp
-        src/utils/Shader.cpp
-        src/utils/ResourcesManager.cpp
-        include/utils/ResourcesManager.hpp
-        include/utils/stb_image.h
-        src/utils/stb_image.c)
+        include/lib/utils/Provider.hpp
+        include/renderer/tools/Shader.hpp
+        src/renderer/tools/Shader.cpp
+        src/lib/utils/ResourcesManager.cpp
+        include/lib/utils/ResourcesManager.hpp
+        include/lib/stb_image.h
+        src/lib/stb_image.c
+        include/lib/interfaces/FlatArray.hpp
+        include/renderer/tools/Camera.hpp
+        src/renderer/tools/Camera.cpp
+        include/lib/interfaces/Observer.hpp
+        include/lib/interfaces/Observable.hpp
+        src/server/Server.cpp
+        include/server/Server.hpp
+        src/world/World.cpp
+        include/world/World.hpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(app ${SOURCE_FILES})

@@ -7,7 +7,7 @@
 
 
 #include "renderer/RenderableModule.hpp"
-#include "utils/Shader.hpp"
+#include "renderer/tools/Shader.hpp"
 
 class TutoModule: public RenderableModule {
 public:

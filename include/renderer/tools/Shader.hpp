@@ -5,10 +5,10 @@
 #ifndef APP_SHADER_HPP
 #define APP_SHADER_HPP
 
-#include "glad/glad.h"
+#include "lib/glad.h"
 #include "renderer/RendererException.hpp"
 
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 #include <string>
 #include <fstream>
 #include <sstream>

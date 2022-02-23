@@ -4,7 +4,7 @@
 
 #include <filesystem>
 #include <utility>
-#include "utils/ResourcesManager.hpp"
+#include "lib/utils/ResourcesManager.hpp"
 
 ResourcesManager::ResourcesManager(std::string path) : _resourcesPath(std::move(path)) {
 }

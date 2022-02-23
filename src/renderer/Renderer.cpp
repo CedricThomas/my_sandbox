@@ -5,7 +5,7 @@
 #include "renderer/Renderer.hpp"
 #include "renderer/RendererException.hpp"
 #include "spdlog/spdlog.h"
-#include "utils/ResourcesManager.hpp"
+#include "lib/utils/ResourcesManager.hpp"
 
 Renderer &Renderer::getInstance() {
     static Renderer instance;
@@ -21,7 +21,7 @@ Renderer::Renderer() :
                 }),
         _modules(),
         _window(nullptr),
-        _provider() {
+        _provider(Provider::getInstance()) {
 
 }
 
@@ -161,7 +161,7 @@ void Renderer::init() {
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-    // registering resources in the utils
+    // registering resources in the lib
     // ---------------------------------------
     _provider.share<GLFWwindow>("window", _window);
     _provider.share<Renderer>("renderer", this);
@@ -228,3 +228,11 @@ void Renderer::registerModule(std::unique_ptr<RenderableModule> &&module) {
 const Renderer::RendererConfig &Renderer::getConfig() const {
     return _config;
 }
+//
+//void Renderer::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+//
+//}
+//
+//void Renderer::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+//
+//}

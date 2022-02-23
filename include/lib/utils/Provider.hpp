@@ -14,6 +14,14 @@
 
 class Provider {
 public:
+    Provider(Provider const &) = delete;
+    void operator=(Provider const &) = delete;
+
+    static Provider &getInstance() {
+        static Provider instance;
+        return instance;
+    }
+
     template<typename T>
     void share(const std::string &key, T *value) {
         if (_store.find(key) != _store.end())
@@ -63,8 +71,11 @@ public:
     virtual ~Provider() = default;
 
 private:
+
+    Provider() = default;
     std::map<std::string, void *> _store;
     std::map<std::string, std::function<void(void *)>> _deleters;
+    static Provider _instance;
 };
 
 #endif //APP_PROVIDER_HPP
