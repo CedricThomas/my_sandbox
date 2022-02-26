@@ -9,6 +9,7 @@
 #include "GLFW/glfw3.h"
 #include "RenderableModule.hpp"
 #include "lib/utils/Provider.hpp"
+#include "renderer/tools/RenderingTracker.hpp"
 
 #include <map>
 #include <string>
@@ -44,6 +45,8 @@ public:
 
     const RendererConfig &getConfig() const;
 
+    const RenderingTracker &getRenderingTracker() const;
+
 private:
     static void
     debug_callback(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message,
@@ -60,6 +63,7 @@ private:
     void cleanup();
 
     RendererConfig _config;
+    RenderingTracker _tracker;
     std::list<std::unique_ptr<RenderableModule>> _modules;
     GLFWwindow *_window;
     Provider &_provider;

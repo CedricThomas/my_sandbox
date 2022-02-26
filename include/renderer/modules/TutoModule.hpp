@@ -8,6 +8,7 @@
 
 #include "renderer/RenderableModule.hpp"
 #include "renderer/tools/Shader.hpp"
+#include "renderer/tools/Camera.hpp"
 
 class TutoModule: public RenderableModule {
 public:
@@ -21,11 +22,18 @@ public:
 
     void onCleanup(const Provider &provider) override;
 
+    void onMouse(const Provider &provider, double xpos, double ypos) override;
+
+    void onScroll(const Provider &provider, double xoffset, double yoffset) override;
+
     GLuint _vao;
     GLuint _vbo;
     GLuint _texture1;
     GLuint _texture2;
     Shader _shader;
+    Camera _camera;
+    Renderer *_renderer;
+    GLFWwindow *_window;
 };
 
 

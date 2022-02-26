@@ -12,10 +12,15 @@
 
 
 TutoModule::TutoModule() : RenderableModule("TutoModule"), _vao(0), _vbo(0), _texture1(0), _texture2(0),
-                           _shader() {}
+                           _shader(), _camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
 
 void TutoModule::onInit(const Provider &provider) {
     RenderableModule::onInit(provider);
+
+    // Save the usefull variables from the provider
+    // ------------------------------------
+    _renderer = provider.provide<Renderer>("renderer");
+    _window = provider.provide<GLFWwindow>("window");
 
     // build and compile our shader program
     // ------------------------------------
@@ -101,7 +106,8 @@ void TutoModule::onInit(const Provider &provider) {
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char *data = stbi_load(resourcesManager->getResourcePath("textures/wall.jpg").c_str(), &width, &height, &nrChannels,
+    unsigned char *data = stbi_load(resourcesManager->getResourcePath("textures/wall.jpg").c_str(), &width, &height,
+                                    &nrChannels,
                                     0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -133,7 +139,8 @@ void TutoModule::onInit(const Provider &provider) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // load image, create texture and generate mipmaps
-    data = stbi_load(resourcesManager->getResourcePath("textures/awesomeface.png").c_str(), &width, &height, &nrChannels, 0);
+    data = stbi_load(resourcesManager->getResourcePath("textures/awesomeface.png").c_str(), &width, &height,
+                     &nrChannels, 0);
     if (data) {
         // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -150,19 +157,11 @@ void TutoModule::onInit(const Provider &provider) {
     _shader.setInt("texture2", 1);
 
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-}
-
-void TutoModule::onInput(const Provider &provider) {
-    RenderableModule::onInput(provider);
-    auto window = provider.provide<GLFWwindow>("window");
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
 }
 
 void TutoModule::onRender(const Provider &provider) {
     RenderableModule::onRender(provider);
-    auto config = provider.provide<Renderer>("renderer")->getConfig();
+    auto config = _renderer->getConfig();
 
     // bind Texture
     glActiveTexture(GL_TEXTURE0);
@@ -177,11 +176,10 @@ void TutoModule::onRender(const Provider &provider) {
     glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     glm::mat4 projection = glm::mat4(1.0f);
     projection = glm::perspective(glm::radians(45.0f), (float) config.width / (float) config.height, 0.1f, 100.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     // pass transformation matrices to the shader
     _shader.setMat4("projection",
                     projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-    _shader.setMat4("view", view);
+    _shader.setMat4("view", _camera.getViewMatrix());
 
     // render boxes world space positions of our cubes
     glm::vec3 cubePositions[] = {
@@ -217,4 +215,32 @@ void TutoModule::onCleanup(const Provider &provider) {
     glDeleteVertexArrays(1, &_vao);
     glDeleteBuffers(1, &_vbo);
     _shader.deleteProgram();
+}
+
+void TutoModule::onMouse(const Provider &provider, double xpos, double ypos) {
+    RenderableModule::onMouse(provider, xpos, ypos);
+
+    auto tracker = _renderer->getRenderingTracker();
+    _camera.processMouseMovement(tracker.getMouseXDelta(), tracker.getMouseYDelta());
+}
+
+void TutoModule::onScroll(const Provider &provider, double xoffset, double yoffset) {
+    RenderableModule::onScroll(provider, xoffset, yoffset);
+    _camera.processMouseScroll(static_cast<float>(yoffset));
+}
+
+void TutoModule::onInput(const Provider &provider) {
+    RenderableModule::onInput(provider);
+    if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(_window, true);
+
+    auto tracker = _renderer->getRenderingTracker();
+    if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
+        _camera.processKeyboard(Camera::Movement::FORWARD, tracker.getFrameDelta());
+    if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
+        _camera.processKeyboard(Camera::Movement::BACKWARD, tracker.getFrameDelta());
+    if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
+        _camera.processKeyboard(Camera::Movement::LEFT, tracker.getFrameDelta());
+    if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
+        _camera.processKeyboard(Camera::Movement::RIGHT, tracker.getFrameDelta());
 }

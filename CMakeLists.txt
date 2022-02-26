@@ -35,7 +35,7 @@ set(SOURCE_FILES
         src/server/Server.cpp
         include/server/Server.hpp
         src/world/World.cpp
-        include/world/World.hpp)
+        include/world/World.hpp src/renderer/tools/RenderingTracker.cpp include/renderer/tools/RenderingTracker.hpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(app ${SOURCE_FILES})

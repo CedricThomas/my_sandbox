@@ -19,6 +19,7 @@ Renderer::Renderer() :
                         "Window",
                         "resources",
                 }),
+        _tracker(),
         _modules(),
         _window(nullptr),
         _provider(Provider::getInstance(ProviderType::RENDERING)) {
@@ -31,6 +32,10 @@ void Renderer::framebuffer_size_callback(GLFWwindow *window, int width, int heig
     spdlog::debug("[GLW callback] Resizing to {} x {}", width, height);
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
+    static auto &provider = Provider::getInstance(ProviderType::RENDERING);
+    static auto renderer = provider.provide<Renderer>("renderer");
+    renderer->_config.width = width;
+    renderer->_config.height = height;
     glViewport(0, 0, width, height);
 }
 
@@ -39,6 +44,7 @@ void Renderer::framebuffer_size_callback(GLFWwindow *window, int width, int heig
 void Renderer::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     static auto &provider = Provider::getInstance(ProviderType::RENDERING);
     static auto renderer = provider.provide<Renderer>("renderer");
+    renderer->_tracker.trackMousePosition(static_cast<float>(xpos), static_cast<float>(ypos));
     for (auto &module: renderer->_modules)
         module->onMouse(provider, xpos, ypos);
 }
@@ -157,6 +163,11 @@ void Renderer::init() {
     }
     glfwMakeContextCurrent(_window);
     glfwSetFramebufferSizeCallback(_window, Renderer::framebuffer_size_callback);
+    glfwSetCursorPosCallback(_window, mouse_callback);
+    glfwSetScrollCallback(_window, scroll_callback);
+
+    // tell GLFW to capture our mouse
+    glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -213,6 +224,7 @@ void Renderer::render() {
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(_window);
         glfwPollEvents();
+        _tracker.trackFrameTime(static_cast<float>(glfwGetTime()));
     }
 }
 
@@ -244,4 +256,8 @@ void Renderer::registerModule(std::unique_ptr<RenderableModule> &&module) {
 
 const Renderer::RendererConfig &Renderer::getConfig() const {
     return _config;
+}
+
+const RenderingTracker &Renderer::getRenderingTracker() const {
+    return _tracker;
 }

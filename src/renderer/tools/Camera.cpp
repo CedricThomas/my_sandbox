@@ -25,7 +25,7 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
     updateCameraVectors();
 }
 
-void Camera::processKeyboard(CameraMovement direction, float deltaTime) {
+void Camera::processKeyboard(Movement direction, float deltaTime) {
     float velocity = _movementSpeed * deltaTime;
     if (direction == FORWARD)
         _position += _front * velocity;
