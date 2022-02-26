@@ -27,7 +27,7 @@ set(SOURCE_FILES
         include/lib/utils/ResourcesManager.hpp
         include/lib/stb_image.h
         src/lib/stb_image.c
-        include/lib/interfaces/FlatArray.hpp
+        include/lib/containers/FlatArray.hpp
         include/renderer/tools/Camera.hpp
         src/renderer/tools/Camera.cpp
         include/lib/interfaces/Observer.hpp

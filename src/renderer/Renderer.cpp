@@ -21,7 +21,7 @@ Renderer::Renderer() :
                 }),
         _modules(),
         _window(nullptr),
-        _provider(Provider::getInstance()) {
+        _provider(Provider::getInstance(ProviderType::RENDERING)) {
 
 }
 
@@ -34,6 +34,23 @@ void Renderer::framebuffer_size_callback(GLFWwindow *window, int width, int heig
     glViewport(0, 0, width, height);
 }
 
+// glfw: whenever the mouse is moved this callback function executes
+// ---------------------------------------------------------------------------------------------
+void Renderer::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    static auto &provider = Provider::getInstance(ProviderType::RENDERING);
+    static auto renderer = provider.provide<Renderer>("renderer");
+    for (auto &module: renderer->_modules)
+        module->onMouse(provider, xpos, ypos);
+}
+
+// glfw: whenever the mouse wheel is triggered this callback function executes
+// ---------------------------------------------------------------------------------------------
+void Renderer::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+    static auto &provider = Provider::getInstance(ProviderType::RENDERING);
+    static auto renderer = provider.provide<Renderer>("renderer");
+    for (auto &module: renderer->_modules)
+        module->onScroll(provider, xoffset, yoffset);
+}
 
 // glfw: whenever a debut log must be show this callback function executes
 // ---------------------------------------------------------------------------------------------
@@ -228,11 +245,3 @@ void Renderer::registerModule(std::unique_ptr<RenderableModule> &&module) {
 const Renderer::RendererConfig &Renderer::getConfig() const {
     return _config;
 }
-//
-//void Renderer::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-//
-//}
-//
-//void Renderer::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-//
-//}

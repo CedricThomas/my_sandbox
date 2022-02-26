@@ -17,6 +17,10 @@ void RenderableModule::onInput(const Provider &provider) {}
 
 void RenderableModule::onRender(const Provider &provider) {}
 
+void RenderableModule::onMouse(const Provider &provider, double xpos, double ypos) {}
+
+void RenderableModule::onScroll(const Provider &provider, double xoffset, double yoffset) {}
+
 void RenderableModule::onCleanup(const Provider &provider) {
     spdlog::debug("[{}] Cleaning...", getName());
 }

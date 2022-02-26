@@ -12,14 +12,24 @@
 #include <stdexcept>
 #include "spdlog/spdlog.h"
 
+enum class ProviderType {
+    RENDERING,
+    WORLD,
+    NETWORK,
+};
+
 class Provider {
 public:
     Provider(Provider const &) = delete;
+
     void operator=(Provider const &) = delete;
 
-    static Provider &getInstance() {
-        static Provider instance;
-        return instance;
+    static Provider &getInstance(ProviderType type) {
+        static std::map<ProviderType, std::unique_ptr<Provider>> _instances;
+        if (_instances.find(type) == _instances.end()) {
+            _instances.emplace(type, std::unique_ptr<Provider>(new Provider()));
+        }
+        return *_instances[type].get();
     }
 
     template<typename T>
@@ -75,7 +85,6 @@ private:
     Provider() = default;
     std::map<std::string, void *> _store;
     std::map<std::string, std::function<void(void *)>> _deleters;
-    static Provider _instance;
 };
 
 #endif //APP_PROVIDER_HPP

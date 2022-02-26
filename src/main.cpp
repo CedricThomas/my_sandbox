@@ -20,15 +20,15 @@ int main()
         "Application",
         "../resources",
     });
-//    renderer.registerModule(std::make_unique<TutoModule>());
-//    renderer.start();
+    renderer.registerModule(std::make_unique<TutoModule>());
+    renderer.start();
 
-    Server server;
-    World world;
-
-    server.Observable<int>::addObserver((Observer<int> *)&world);
-    server.Observable<float>::addObserver((Observer<float> *)&world);
-    server.start();
+//    Server server;
+//    World world;
+//
+//    server.Observable<int>::addObserver((Observer<int> *)&world);
+//    server.Observable<float>::addObserver((Observer<float> *)&world);
+//    server.start();
 
 
     return 0;

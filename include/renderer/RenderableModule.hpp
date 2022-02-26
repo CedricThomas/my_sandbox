@@ -22,6 +22,10 @@ public:
 
     virtual void onCleanup(const Provider &provider);
 
+    virtual void onMouse(const Provider &provider, double xpos, double ypos);
+
+    virtual void onScroll(const Provider &provider, double xoffset, double yoffset);
+
     const std::string &getName() const;
 
 private:
