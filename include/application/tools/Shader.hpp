@@ -6,7 +6,7 @@
 #define APP_SHADER_HPP
 
 #include "lib/glad.h"
-#include "renderer/RendererException.hpp"
+#include "application/ApplicationException.hpp"
 
 #include "glm/glm.hpp"
 #include <string>

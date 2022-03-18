@@ -2,17 +2,17 @@
 // Created by arzad on 16/01/2022.
 //
 #include <sstream>
-#include "renderer/Renderer.hpp"
-#include "renderer/RendererException.hpp"
+#include "application/Application.hpp"
+#include "application/ApplicationException.hpp"
 #include "spdlog/spdlog.h"
 #include "lib/utils/ResourcesManager.hpp"
 
-Renderer &Renderer::getInstance() {
-    static Renderer instance;
+Application &Application::getInstance() {
+    static Application instance;
     return instance;
 }
 
-Renderer::Renderer() :
+Application::Application() :
         _config({
                         800,
                         600,
@@ -20,53 +20,50 @@ Renderer::Renderer() :
                         "resources",
                 }),
         _tracker(),
-        _modules(),
-        _window(nullptr),
-        _provider(Provider::getInstance(ProviderType::RENDERING)) {
+        _resourcesManager("resources"),
+        _renderers(),
+        _window(nullptr){
 
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void Renderer::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+void Application::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     spdlog::debug("[GLW callback] Resizing to {} x {}", width, height);
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
-    static auto &provider = Provider::getInstance(ProviderType::RENDERING);
-    static auto renderer = provider.provide<Renderer>("renderer");
-    renderer->_config.width = width;
-    renderer->_config.height = height;
+    static auto &application = Application::getInstance();
+    application._config.width = width;
+    application._config.height = height;
     glViewport(0, 0, width, height);
 }
 
 // glfw: whenever the mouse is moved this callback function executes
 // ---------------------------------------------------------------------------------------------
-void Renderer::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-    static auto &provider = Provider::getInstance(ProviderType::RENDERING);
-    static auto renderer = provider.provide<Renderer>("renderer");
-    renderer->_tracker.trackMousePosition(static_cast<float>(xpos), static_cast<float>(ypos));
-    for (auto &module: renderer->_modules)
-        module->onMouse(provider, xpos, ypos);
+void Application::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    static auto &application = Application::getInstance();
+    application._tracker.trackMousePosition(static_cast<float>(xpos), static_cast<float>(ypos));
+    for (auto &renderer: application._renderers)
+        renderer->onMouse(application, xpos, ypos);
 }
 
 // glfw: whenever the mouse wheel is triggered this callback function executes
 // ---------------------------------------------------------------------------------------------
-void Renderer::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-    static auto &provider = Provider::getInstance(ProviderType::RENDERING);
-    static auto renderer = provider.provide<Renderer>("renderer");
-    for (auto &module: renderer->_modules)
-        module->onScroll(provider, xoffset, yoffset);
+void Application::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+    static auto &application = Application::getInstance();
+    for (auto &renderer: application._renderers)
+        renderer->onScroll(application, xoffset, yoffset);
 }
 
 // glfw: whenever a debut log must be show this callback function executes
 // ---------------------------------------------------------------------------------------------
-void APIENTRY Renderer::debug_callback(GLenum source,
-                                       GLenum type,
-                                       unsigned int id,
-                                       GLenum severity,
-                                       GLsizei length,
-                                       const char *message,
-                                       const void *userParam) {
+void APIENTRY Application::debug_callback(GLenum source,
+                                          GLenum type,
+                                          unsigned int id,
+                                          GLenum severity,
+                                          GLsizei length,
+                                          const char *message,
+                                          const void *userParam) {
     std::stringstream errorStream;
 
     // ignore non-significant error/warning codes
@@ -145,7 +142,7 @@ void APIENTRY Renderer::debug_callback(GLenum source,
     spdlog::error(errorStream.str());
 }
 
-void Renderer::init() {
+void Application::init() {
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -159,10 +156,10 @@ void Renderer::init() {
     _window = glfwCreateWindow(_config.width, _config.height, _config.title.c_str(), NULL, NULL);
     if (_window == nullptr) {
         glfwTerminate();
-        throw RendererException("Failed to create GLFW window");
+        throw ApplicationException("Failed to create GLFW window");
     }
     glfwMakeContextCurrent(_window);
-    glfwSetFramebufferSizeCallback(_window, Renderer::framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(_window, Application::framebuffer_size_callback);
     glfwSetCursorPosCallback(_window, mouse_callback);
     glfwSetScrollCallback(_window, scroll_callback);
 
@@ -172,7 +169,7 @@ void Renderer::init() {
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        throw RendererException("Failed to initialize GLAD");
+        throw ApplicationException("Failed to initialize GLAD");
     }
 
     // initialize debug output
@@ -189,19 +186,17 @@ void Renderer::init() {
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-    // registering resources in the lib
+    // reconfigure tools from config
     // ---------------------------------------
-    _provider.share<GLFWwindow>("window", _window);
-    _provider.share<Renderer>("renderer", this);
-    _provider.store<ResourcesManager>("resourcesManager", new ResourcesManager(_config.resourcesFolder));
+    _resourcesManager = ResourcesManager(_config.resourcesFolder);
 
     // custom init
     // ---------------------------------------
-    for (auto &module: _modules)
-        module->onInit(_provider);
+    for (auto &renderer: _renderers)
+        renderer->onInit(*this);
 }
 
-void Renderer::render() {
+void Application::render() {
     // render loop
     // -----------
     while (!glfwWindowShouldClose(_window)) {
@@ -212,13 +207,13 @@ void Renderer::render() {
 
         // input
         // -----
-        for (auto &module: _modules)
-            module->onInput(_provider);
+        for (auto &renderer: _renderers)
+            renderer->onInput(*this);
 
         // render
         // ------
-        for (auto &module: _modules)
-            module->onRender(_provider);
+        for (auto &renderer: _renderers)
+            renderer->onRender(*this);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -228,36 +223,44 @@ void Renderer::render() {
     }
 }
 
-void Renderer::cleanup() {
+void Application::cleanup() {
     // custom cleanup
     // ------------------------------------------------------------------
-    for (auto moduleIt = _modules.rbegin(); moduleIt != _modules.rend(); moduleIt++)
-        (*moduleIt)->onCleanup(_provider);
+    for (auto rendererIt = _renderers.rbegin(); rendererIt != _renderers.rend(); rendererIt++)
+        (*rendererIt)->onCleanup(*this);
 
     // glfw: terminate, clearing all previously allocated GLFW resources
     // ------------------------------------------------------------------
     glfwTerminate();
 }
 
-void Renderer::start() {
+void Application::start() {
     init();
     render();
     cleanup();
 }
 
-void Renderer::configure(const Renderer::RendererConfig &config) {
+void Application::configure(const Application::ApplicationConfig &config) {
     _config = config;
 }
 
-void Renderer::registerModule(std::unique_ptr<RenderableModule> &&module) {
-    spdlog::debug("[{}] Registering", module->getName());
-    _modules.push_back(std::move(module));
+void Application::registerRenderer(std::unique_ptr<ARenderer> &&renderer) {
+    spdlog::debug("[{}] Registering", renderer->getName());
+    _renderers.push_back(std::move(renderer));
 }
 
-const Renderer::RendererConfig &Renderer::getConfig() const {
+const Application::ApplicationConfig &Application::getConfig() const {
     return _config;
 }
 
-const RenderingTracker &Renderer::getRenderingTracker() const {
-    return _tracker;
+const RenderingTracker *Application::getRenderingTracker() const {
+    return &_tracker;
+}
+
+GLFWwindow *Application::getWindow() const {
+    return _window;
+}
+
+const ResourcesManager &Application::getResourcesManager() const {
+    return _resourcesManager;
 }

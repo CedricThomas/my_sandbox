@@ -2,19 +2,19 @@
 // Created by arzad on 20/02/2022.
 //
 
-#ifndef APP_FLATARRAY_HPP
-#define APP_FLATARRAY_HPP
+#ifndef APP_FLAT3DARRAY_HPP
+#define APP_FLAT3DARRAY_HPP
 
 #include <vector>
 
 template<typename T>
-class FlatArray {
+class Flat3DArray {
 public:
-    FlatArray(int x, int y, int z) : _x(x), _y(y), _z(z) {
+    Flat3DArray(int x, int y, int z) : _x(x), _y(y), _z(z) {
         _data.resize(x * y * z);
     }
 
-    ~FlatArray() = default;
+    ~Flat3DArray() = default;
 
     int get(int x, int y, int z) {
         return _data[x + _x * (y + _y * z)];
@@ -49,4 +49,4 @@ private:
     std::vector<T> _data;
 };
 
-#endif //APP_FLATARRAY_HPP
+#endif //APP_FLAT3DARRAY_HPP

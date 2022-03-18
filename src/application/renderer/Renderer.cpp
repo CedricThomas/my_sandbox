@@ -4,30 +4,30 @@
 
 #include "lib/glad.h"
 #include <GLFW/glfw3.h>
-#include "renderer/modules/TutoModule.hpp"
-#include "renderer/Renderer.hpp"
+#include "application/renderer/Renderer.hpp"
+#include "application/Application.hpp"
 #include "lib/utils/ResourcesManager.hpp"
 #include "lib/stb_image.h"
 #include "glm/gtc/matrix_transform.hpp"
 
 
-TutoModule::TutoModule() : RenderableModule("TutoModule"), _vao(0), _vbo(0), _texture1(0), _texture2(0),
-                           _shader(), _camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
+Renderer::Renderer() : ARenderer("Renderer"), _vao(0), _vbo(0), _texture1(0), _texture2(0),
+                       _shader(), _camera(glm::vec3(0.0f, 0.0f, 3.0f)), _tracker(), _window() {}
 
-void TutoModule::onInit(const Provider &provider) {
-    RenderableModule::onInit(provider);
+void Renderer::onInit(const Application &application) {
+    ARenderer::onInit(application);
 
-    // Save the usefull variables from the provider
+    // Save the usefull variables from the application
     // ------------------------------------
-    _renderer = provider.provide<Renderer>("renderer");
-    _window = provider.provide<GLFWwindow>("window");
+    _window = application.getWindow();
+    _tracker = application.getRenderingTracker();
+    auto resourcesManager = application.getResourcesManager();
 
     // build and compile our shader program
     // ------------------------------------
-    auto resourcesManager = provider.provide<ResourcesManager>("resourcesManager");
     _shader = Shader(
-            resourcesManager->getResourcePath("shaders/tuto.vert"),
-            resourcesManager->getResourcePath("shaders/tuto.frag")
+            resourcesManager.getResourcePath("shaders/tuto.vert"),
+            resourcesManager.getResourcePath("shaders/tuto.frag")
     );
 
     float vertices[] = {
@@ -86,6 +86,7 @@ void TutoModule::onInit(const Provider &provider) {
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
+
     // texture coord attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
@@ -106,7 +107,7 @@ void TutoModule::onInit(const Provider &provider) {
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char *data = stbi_load(resourcesManager->getResourcePath("textures/wall.jpg").c_str(), &width, &height,
+    unsigned char *data = stbi_load(resourcesManager.getResourcePath("textures/wall.jpg").c_str(), &width, &height,
                                     &nrChannels,
                                     0);
     if (data) {
@@ -139,7 +140,7 @@ void TutoModule::onInit(const Provider &provider) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // load image, create texture and generate mipmaps
-    data = stbi_load(resourcesManager->getResourcePath("textures/awesomeface.png").c_str(), &width, &height,
+    data = stbi_load(resourcesManager.getResourcePath("textures/awesomeface.png").c_str(), &width, &height,
                      &nrChannels, 0);
     if (data) {
         // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
@@ -159,9 +160,9 @@ void TutoModule::onInit(const Provider &provider) {
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-void TutoModule::onRender(const Provider &provider) {
-    RenderableModule::onRender(provider);
-    auto config = _renderer->getConfig();
+void Renderer::onRender(const Application &application) {
+    ARenderer::onRender(application);
+    auto config = application.getConfig();
 
     // bind Texture
     glActiveTexture(GL_TEXTURE0);
@@ -199,7 +200,7 @@ void TutoModule::onRender(const Provider &provider) {
         // calculate the model matrix for each object and pass it to shader before drawing
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, cubePositions[i]);
-        model = glm::rotate(model, glm::radians((float)glfwGetTime() * 20.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+        model = glm::rotate(model, glm::radians((float) glfwGetTime() * 20.0f), glm::vec3(1.0f, 0.3f, 0.5f));
         _shader.setMat4("model", model);
 
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -207,8 +208,8 @@ void TutoModule::onRender(const Provider &provider) {
     glBindVertexArray(0);
 }
 
-void TutoModule::onCleanup(const Provider &provider) {
-    RenderableModule::onCleanup(provider);
+void Renderer::onCleanup(const Application &application) {
+    ARenderer::onCleanup(application);
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &_vao);
@@ -216,30 +217,28 @@ void TutoModule::onCleanup(const Provider &provider) {
     _shader.deleteProgram();
 }
 
-void TutoModule::onMouse(const Provider &provider, double xpos, double ypos) {
-    RenderableModule::onMouse(provider, xpos, ypos);
+void Renderer::onMouse(const Application &application, double xpos, double ypos) {
+    ARenderer::onMouse(application, xpos, ypos);
 
-    auto tracker = _renderer->getRenderingTracker();
-    _camera.processMouseMovement(tracker.getMouseXDelta(), tracker.getMouseYDelta());
+    _camera.processMouseMovement(_tracker->getMouseXDelta(), _tracker->getMouseYDelta());
 }
 
-void TutoModule::onScroll(const Provider &provider, double xoffset, double yoffset) {
-    RenderableModule::onScroll(provider, xoffset, yoffset);
+void Renderer::onScroll(const Application &application, double xoffset, double yoffset) {
+    ARenderer::onScroll(application, xoffset, yoffset);
     _camera.processMouseScroll(static_cast<float>(yoffset));
 }
 
-void TutoModule::onInput(const Provider &provider) {
-    RenderableModule::onInput(provider);
+void Renderer::onInput(const Application &application) {
+    ARenderer::onInput(application);
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(_window, true);
 
-    auto tracker = _renderer->getRenderingTracker();
     if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-        _camera.processKeyboard(Camera::Movement::FORWARD, tracker.getFrameDelta());
+        _camera.processKeyboard(Camera::Movement::FORWARD, _tracker->getFrameDelta());
     if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-        _camera.processKeyboard(Camera::Movement::BACKWARD, tracker.getFrameDelta());
+        _camera.processKeyboard(Camera::Movement::BACKWARD, _tracker->getFrameDelta());
     if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-        _camera.processKeyboard(Camera::Movement::LEFT, tracker.getFrameDelta());
+        _camera.processKeyboard(Camera::Movement::LEFT, _tracker->getFrameDelta());
     if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-        _camera.processKeyboard(Camera::Movement::RIGHT, tracker.getFrameDelta());
+        _camera.processKeyboard(Camera::Movement::RIGHT, _tracker->getFrameDelta());
 }

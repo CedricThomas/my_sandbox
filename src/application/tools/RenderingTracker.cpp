@@ -2,7 +2,7 @@
 // Created by arzad on 26/02/2022.
 //
 
-#include "renderer/tools/RenderingTracker.hpp"
+#include "application/tools/RenderingTracker.hpp"
 
 RenderingTracker::RenderingTracker() : _firstFrame(true),
                                        _firstMouse(true),
@@ -50,7 +50,7 @@ const float RenderingTracker::getMouseXDelta() const {
     }
 }
 
-const float RenderingTracker::getMouseYDelta() {
+const float RenderingTracker::getMouseYDelta() const {
     if (_firstMouse) {
         return 0;
     } else {

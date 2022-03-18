@@ -1,17 +1,17 @@
-
 #include "spdlog/spdlog.h"
-#include "renderer/Renderer.hpp"
-#include "renderer/modules/TutoModule.hpp"
+#include "application/Application.hpp"
+#include "application/renderer//Renderer.hpp"
 #include "server/Server.hpp"
 #include "world/World.hpp"
 #include "lib/Pool.hpp"
+#include "application/renderer/Vertex.hpp"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 void rendering() {
-    auto &renderer = Renderer::getInstance();
+    auto &renderer = Application::getInstance();
 
     renderer.configure({
                                SCR_WIDTH,
@@ -19,7 +19,7 @@ void rendering() {
                                "Application",
                                "../resources",
                        });
-    renderer.registerModule(std::make_unique<TutoModule>());
+    renderer.registerRenderer(std::make_unique<Renderer>());
     renderer.start();
 }
 
@@ -46,16 +46,15 @@ void pool() {
     pool.addJob([&pool]() {
         spdlog::info("Job 3");
         std::this_thread::sleep_for(std::chrono::seconds(4));
-        pool.shutdown();
     });
-    pool.start();
+    pool.shutdown();
 }
 
 int main()
 {
     spdlog::set_level(spdlog::level::debug); // Set global log level to debug
-//    rendering();
-    pool();
+    rendering();
+//    pool();
     return 0;
 
 }

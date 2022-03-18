@@ -2,14 +2,15 @@
 // Created by arzad on 16/01/2022.
 //
 
-#ifndef APP_RENDERER_HPP
-#define APP_RENDERER_HPP
+#ifndef APP_APPLICATION_HPP
+#define APP_APPLICATION_HPP
 
 #include "lib/glad.h"
 #include "GLFW/glfw3.h"
-#include "RenderableModule.hpp"
+#include "ARenderer.hpp"
 #include "lib/utils/Provider.hpp"
-#include "renderer/tools/RenderingTracker.hpp"
+#include "application/tools/RenderingTracker.hpp"
+#include "lib/utils/ResourcesManager.hpp"
 
 #include <map>
 #include <string>
@@ -17,35 +18,41 @@
 #include <functional>
 #include <memory>
 
-class Renderer {
+class Application {
 // singleton methods and type definition
 public:
-    static Renderer &getInstance();
+    static Application &getInstance();
 
-    Renderer(Renderer const &) = delete;
+    Application(Application const &) = delete;
 
-    void operator=(Renderer const &) = delete;
+    void operator=(Application const &) = delete;
 
 private:
-    Renderer();
+    Application();
 
 public:
-    struct RendererConfig {
+    struct ApplicationConfig {
         int width;
         int height;
         std::string title;
         std::string resourcesFolder;
     };
 
-    void configure(const RendererConfig &config);
+    void configure(const ApplicationConfig &config);
 
-    void registerModule(std::unique_ptr<RenderableModule> &&module);
+    void registerRenderer(std::unique_ptr<ARenderer> &&renderer);
 
     void start();
 
-    const RendererConfig &getConfig() const;
+    const ApplicationConfig &getConfig() const;
 
-    const RenderingTracker &getRenderingTracker() const;
+    const RenderingTracker *getRenderingTracker() const;
+
+    GLFWwindow *getWindow() const;
+
+    const RenderingTracker &getTracker() const;
+
+    const ResourcesManager &getResourcesManager() const;
 
 private:
     static void
@@ -62,13 +69,13 @@ private:
 
     void cleanup();
 
-    RendererConfig _config;
+    ApplicationConfig _config;
     RenderingTracker _tracker;
-    std::list<std::unique_ptr<RenderableModule>> _modules;
+    ResourcesManager _resourcesManager;
+    std::list<std::unique_ptr<ARenderer>> _renderers;
     GLFWwindow *_window;
-    Provider &_provider;
 
 };
 
 
-#endif //APP_RENDERER_HPP
+#endif //APP_APPLICATION_HPP

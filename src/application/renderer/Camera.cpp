@@ -1,7 +1,7 @@
 //
 // Created by arzad on 20/02/2022.
 //
-#include "renderer/tools/Camera.hpp"
+#include "application/tools/Camera.hpp"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : _front(glm::vec3(0.0f, 0.0f, -1.0f)), _movementSpeed(SPEED), _mouseSensitivity(SENSITIVITY), _zoom(ZOOM)
 {

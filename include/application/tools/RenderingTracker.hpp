@@ -13,7 +13,7 @@ public:
     void trackFrameTime(float time);
     const float getFrameDelta() const;
     const float getMouseXDelta() const;
-    const float getMouseYDelta();
+    const float getMouseYDelta() const;
 private:
     bool _firstFrame;
     bool _firstMouse;

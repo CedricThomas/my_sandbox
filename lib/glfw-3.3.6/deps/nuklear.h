@@ -46,7 +46,7 @@
 /// - Low memory footprint with total memory control if needed or wanted
 /// - UTF-8 support
 /// - No global or hidden state
-/// - Customizable library modules (you can compile and use only what you need)
+/// - Customizable library application (you can compile and use only what you need)
 /// - Optional font baker and vertex buffer output
 ///
 /// ## Features

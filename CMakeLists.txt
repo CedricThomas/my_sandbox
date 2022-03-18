@@ -12,30 +12,41 @@ set(SOURCE_FILES
         include/lib/glad.h
         src/lib/glad.c
         src/main.cpp
-        src/renderer/Renderer.cpp
-        include/renderer/Renderer.hpp
-        src/renderer/RendererException.cpp
-        include/renderer/RendererException.hpp
-        src/renderer/RenderableModule.cpp
-        include/renderer/RenderableModule.hpp
-        src/renderer/modules/TutoModule.cpp
-        include/renderer/modules/TutoModule.hpp
+        src/application/Application.cpp
+        include/application/Application.hpp
+        src/application/ApplicationException.cpp
+        include/application/ApplicationException.hpp
+        src/application/ARenderer.cpp
+        include/application/ARenderer.hpp
+        src/application/renderer/Renderer.cpp
+        include/application/renderer/Renderer.hpp
         include/lib/utils/Provider.hpp
-        include/renderer/tools/Shader.hpp
-        src/renderer/tools/Shader.cpp
+        include/application/tools/Shader.hpp
+        src/application/tools/Shader.cpp
         src/lib/utils/ResourcesManager.cpp
         include/lib/utils/ResourcesManager.hpp
         include/lib/stb_image.h
         src/lib/stb_image.c
-        include/lib/containers/FlatArray.hpp
-        include/renderer/tools/Camera.hpp
-        src/renderer/tools/Camera.cpp
+        include/lib/containers/Flat3DArray.hpp
+        include/lib/containers/Flat2DArray.hpp
+        include/application/tools/Camera.hpp
+        src/application/renderer/Camera.cpp
         include/lib/interfaces/Observer.hpp
         include/lib/interfaces/Observable.hpp
         src/server/Server.cpp
         include/server/Server.hpp
         src/world/World.cpp
-        include/world/World.hpp src/renderer/tools/RenderingTracker.cpp include/renderer/tools/RenderingTracker.hpp src/lib/Pool.cpp include/lib/Pool.hpp)
+        include/world/World.hpp
+        src/application/tools/RenderingTracker.cpp
+        include/application/tools/RenderingTracker.hpp
+        src/lib/Pool.cpp
+        include/lib/Pool.hpp
+        src/application/renderer/Vertex.cpp
+        include/application/renderer/Vertex.hpp
+        src/application/renderer/Quad.cpp
+        include/application/renderer/Quad.hpp
+        src/application/renderer/QuadBuffer.cpp
+        include/application/renderer/QuadBuffer.hpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(app ${SOURCE_FILES})
@@ -58,7 +69,4 @@ include_directories(lib/spdlog/include)
 target_link_libraries(app spdlog::spdlog)
 
 # Setup GLM library
-find_package(glm REQUIRED)
-include_directories(${GLM_INCLUDE_DIRS})
-link_directories(${GLM_LIBRARY_DIRS})
-add_definitions(${GLM_DEFINITIONS})
+include_directories(lib/glm)

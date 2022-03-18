@@ -721,7 +721,7 @@ int main(int argc, char** argv)
         }
     }
 
-    printf("%s context renderer string: \"%s\"\n",
+    printf("%s context application string: \"%s\"\n",
            get_api_name(client),
            glGetString(GL_RENDERER));
     printf("%s context vendor string: \"%s\"\n",

@@ -2,7 +2,7 @@
 // Created by arzad on 22/01/2022.
 //
 
-#include "renderer/tools/Shader.hpp"
+#include "application/tools/Shader.hpp"
 
 // default constructor
 Shader::Shader() = default;
@@ -32,7 +32,7 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
         fragmentCode = fShaderStream.str();
     }
     catch (std::ifstream::failure &e) {
-        throw RendererException("Failed to create shader " + std::string(e.what()));
+        throw ApplicationException("Failed to create shader " + std::string(e.what()));
     }
     const char *vShaderCode = vertexCode.c_str();
     const char *fShaderCode = fragmentCode.c_str();
@@ -122,13 +122,13 @@ void Shader::checkCompileErrors(unsigned int shader, const std::string &type) {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-            throw RendererException("Failed to compile shader of type " + type + "\n" + infoLog);
+            throw ApplicationException("Failed to compile shader of type " + type + "\n" + infoLog);
         }
     } else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
-            throw RendererException("Failed to link shader of type " + type + "\n" + infoLog);
+            throw ApplicationException("Failed to link shader of type " + type + "\n" + infoLog);
         }
     }
 }
