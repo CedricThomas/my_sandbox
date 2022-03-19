@@ -13,9 +13,6 @@
 #include "spdlog/spdlog.h"
 
 enum class ProviderType {
-    RENDERING,
-    WORLD,
-    NETWORK,
 };
 
 class Provider {

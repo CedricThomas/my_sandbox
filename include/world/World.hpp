@@ -5,12 +5,20 @@
 #ifndef APP_WORLD_HPP
 #define APP_WORLD_HPP
 
+#include <memory>
 #include "lib/interfaces/Observer.hpp"
+#include "lib/containers/Flat3DArray.hpp"
+#include "lib/containers/TQueue.hpp"
 
-class World: public Observer<int>, public Observer<float> {
+class World {
 public:
-    void update(int value) override;
-    void update(float value) override;
+    World(std::shared_ptr<TQueue<Flat3DArray<short>>>);
+
+    void generate();
+    ~World();
+
+private:
+    std::shared_ptr<TQueue<Flat3DArray<short>>> _queue;
 };
 
 

@@ -46,7 +46,8 @@ set(SOURCE_FILES
         src/application/renderer/Quad.cpp
         include/application/renderer/Quad.hpp
         src/application/renderer/QuadBuffer.cpp
-        include/application/renderer/QuadBuffer.hpp)
+        include/application/renderer/QuadBuffer.hpp
+        include/lib/containers/TQueue.hpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(app ${SOURCE_FILES})

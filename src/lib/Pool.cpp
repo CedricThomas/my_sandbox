@@ -36,10 +36,10 @@ void Pool::start(int ID) {
     }
 }
 
-void Pool::addJob(const std::function<void()> &job) {
+void Pool::addJob(const std::function<void()> &&job) {
     {
         std::unique_lock<std::mutex> lock(_queue_lock);
-        _jobs_queue.push(job);
+        _jobs_queue.emplace(job);
     }
     _job_available_condition.notify_one();
 }
@@ -89,4 +89,8 @@ Pool::~Pool() {
     if (!_stopped) {
         this->shutdown();
     }
+}
+
+bool Pool::isStopping() const {
+    return _terminate_pool;
 }

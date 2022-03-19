@@ -16,7 +16,8 @@
 class Pool {
 public:
     void shutdown();
-    void addJob(const std::function<void()> &job);
+    void addJob(const std::function<void()> &&job);
+    bool isStopping() const;
 
     explicit Pool(int min_threads, int max_threads = MAX_THREADS);
     virtual ~Pool();

@@ -2,13 +2,19 @@
 // Created by arzad on 23/02/2022.
 //
 
-#include <iostream>
+#include <utility>
 #include "world/World.hpp"
 
-void World::update(int value) {
-    std::cout << "World::update(int value)" << std::endl;
+World::World(std::shared_ptr<TQueue<Flat3DArray<short>>> queue): _queue(std::move(queue)) {
 }
 
-void World::update(float value) {
-    std::cout << "World::update(float value)" << std::endl;
+World::~World() {
+}
+
+void World::generate() {
+    short data[] = {
+        500, 0,
+        500, 1,
+    };
+    _queue->push(Flat3DArray<short>::unzip(data, 10, 10, 10));
 }

@@ -4,6 +4,8 @@
 #include "server/Server.hpp"
 #include "world/World.hpp"
 #include "lib/Pool.hpp"
+#include "lib/containers/Flat3DArray.hpp"
+#include "lib/containers/TQueue.hpp"
 #include "application/renderer/Vertex.hpp"
 
 // settings
@@ -24,12 +26,35 @@ void rendering() {
 }
 
 void world_server() {
-    Server server;
-    World world;
+    auto queue = std::make_shared<TQueue<Flat3DArray<short>>>();
 
-    server.Observable<int>::addObserver((Observer<int> *)&world);
-    server.Observable<float>::addObserver((Observer<float> *)&world);
-    server.start();
+    auto &renderer = Application::getInstance();
+    renderer.configure({
+                               SCR_WIDTH,
+                               SCR_HEIGHT,
+                               "Application",
+                               "../resources",
+                       });
+    renderer.registerRenderer(std::make_unique<Renderer>());
+
+    Pool pool(1, 2);
+
+    pool.addJob([&]() {
+        World world(queue);
+        world.generate();
+        world.generate();
+        world.generate();
+    });
+    pool.addJob([&]() {
+        while (!pool.isStopping()) {
+            auto data = queue->pop();
+            if (data.has_value()) {
+                std::cout << "received data" << std::endl;
+            }
+        }
+    });
+    renderer.start();
+    pool.shutdown();
 }
 
 void pool() {
@@ -49,12 +74,23 @@ void pool() {
     });
     pool.shutdown();
 }
+void zip() {
+    short data[] = {
+            500, 1,
+            500, 2,
+    };
+    auto array = Flat3DArray<short>::unzip(data, 10, 10, 10);
+    std::cout << array.getData()[499] << std::endl;
+    std::cout << array.getData()[999] << std::endl;
+}
 
 int main()
 {
     spdlog::set_level(spdlog::level::debug); // Set global log level to debug
-    rendering();
+    world_server();
+//    rendering();
 //    pool();
+//    zip();
     return 0;
 
 }
