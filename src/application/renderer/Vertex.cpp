@@ -4,7 +4,6 @@
 
 #include "application/renderer/Vertex.hpp"
 
-Vertex::Vertex(const glm::vec3 &position, const glm::vec2 &texCoords, float textureIndex) : position(position),
-                                                                                            texCoords(texCoords),
-                                                                                            textureIndex(
-                                                                                                    textureIndex) {}
+Vertex::Vertex(const glm::vec3 &position, const glm::vec2 &textureCoords, float textureIndex) : Position(position),
+                                                                                                TextureCoords(textureCoords),
+                                                                                                TextureIndex(textureIndex) {}

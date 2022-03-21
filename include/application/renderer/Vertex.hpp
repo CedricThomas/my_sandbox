@@ -6,16 +6,19 @@
 #define APP_VERTEX_HPP
 
 
+#include <ostream>
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 
 struct Vertex {
 public:
-    Vertex(const glm::vec3 &position, const glm::vec2 &texCoords, float textureIndex);
+    Vertex(const glm::vec3 &Position, const glm::vec2 &TextureCoords, float TextureIndex);
 
-    glm::vec3 position;
-    glm::vec2 texCoords;
-    float textureIndex;
+    friend std::ostream &operator<<(std::ostream &os, const Vertex &vertex);
+
+    glm::vec3 Position;
+    glm::vec2 TextureCoords;
+    float TextureIndex;
 };
 
 

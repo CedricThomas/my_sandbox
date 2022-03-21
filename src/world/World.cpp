@@ -5,16 +5,18 @@
 #include <utility>
 #include "world/World.hpp"
 
-World::World(std::shared_ptr<TQueue<Flat3DArray<short>>> queue): _queue(std::move(queue)) {
+World::World(std::shared_ptr<TQueue<WorldUpdate>> queue): _queue(std::move(queue)) {
 }
 
 World::~World() {
 }
 
 void World::generate() {
-    short data[] = {
-        500, 0,
-        500, 1,
+    unsigned short data[] = {
+        30000, 0,
+        30000, 1,
+        5280, 0,
     };
-    _queue->push(Flat3DArray<short>::unzip(data, 10, 10, 10));
+    auto chunk = ChunkUpdate::unzip(data, 16, 16, 255);
+    _queue->push(chunk);
 }

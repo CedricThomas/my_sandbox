@@ -38,6 +38,8 @@ public:
     // ------------------------------------------------------------------------
     void setInt(const std::string &name, int value) const;
 
+    void setInts(const std::string &name, int size, int *values) const;
+
     // ------------------------------------------------------------------------
     void setFloat(const std::string &name, float value) const;
 
@@ -70,6 +72,7 @@ private:
     // utility function for checking shader compilation/linking errors.
     // ------------------------------------------------------------------------
     static void checkCompileErrors(unsigned int shader, const std::string& type);
+
 };
 
 #endif //APP_SHADER_HPP
