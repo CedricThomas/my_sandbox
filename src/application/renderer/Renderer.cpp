@@ -162,34 +162,30 @@ void Renderer::onRender(const Application &application) {
                     Vertex(glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec2(0.0f, 1.0f), 0.0f)
             ));
             _quadBuffer.emplace_back(Quad(
-
                     Vertex(glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec2(1.0f, 0.0f), 0.0f),
                     Vertex(glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec2(1.0f, 1.0f), 0.0f),
                     Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 1.0f), 0.0f),
                     Vertex(glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f), 0.0f)
             ));
             _quadBuffer.emplace_back(Quad(
-
                     Vertex(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec2(1.0f, 0.0f), 0.0f),
                     Vertex(glm::vec3(0.5f, 0.5f, -0.5f), glm::vec2(1.0f, 1.0f), 0.0f),
                     Vertex(glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 1.0f), 0.0f),
                     Vertex(glm::vec3(0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f), 0.0f)
             ));
             _quadBuffer.emplace_back(Quad(
-
                     Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 1.0f), 0.0f),
                     Vertex(glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 1.0f), 0.0f),
                     Vertex(glm::vec3(0.5f, -0.5f, 0.5f), glm::vec2(1.0f, 0.0f), 0.0f),
                     Vertex(glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f), 0.0f)
             ));
             _quadBuffer.emplace_back(Quad(
-
                     Vertex(glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec2(0.0f, 1.0f), 0.0f),
                     Vertex(glm::vec3(0.5f, 0.5f, -0.5f), glm::vec2(1.0f, 1.0f), 0.0f),
                     Vertex(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec2(1.0f, 0.0f), 0.0f),
                     Vertex(glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec2(0.0f, 0.0f), 0.0f)
             ));
-            
+
             glBindBuffer(GL_ARRAY_BUFFER, _vbo);
             glBufferSubData(GL_ARRAY_BUFFER, 0, (ssize_t) _quadBuffer.getSize(), _quadBuffer.getVertices());
         }
