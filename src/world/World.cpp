@@ -3,20 +3,25 @@
 //
 
 #include <utility>
+#include <csignal>
 #include "world/World.hpp"
 
-World::World(std::shared_ptr<TQueue<WorldUpdate>> queue): _queue(std::move(queue)) {
+World::World(std::shared_ptr<TQueue<WorldEvent>> queue): _queue(std::move(queue)) {
 }
 
 World::~World() {
 }
 
 void World::generate() {
-    unsigned short data[] = {
-        30000, 0,
-        30000, 1,
-        5280, 0,
-    };
-    auto chunk = ChunkUpdate::unzip(data, 16, 16, 255);
-    _queue->push(chunk);
+    unsigned short max_block = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
+    unsigned short number = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_WIDTH;
+    for (unsigned short i = number; i <= number; i += 16) {
+        unsigned short data[] = {
+                i, 1,
+                static_cast<unsigned short>((max_block - i)), 0,
+        };
+        auto chunk = Chunk::unzip(data, CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
+        _queue->push(chunk);
+        sleep(1);
+    }
 }

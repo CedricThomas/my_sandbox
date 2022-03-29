@@ -19,7 +19,7 @@ public:
 
     ~Flat2DArray() = default;
 
-    int get(int x, int y) {
+    T get(int x, int y) const {
         return _data[x + _x * y];
     }
 

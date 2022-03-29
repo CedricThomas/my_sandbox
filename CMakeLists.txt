@@ -29,7 +29,7 @@ set(SOURCE_FILES
         src/lib/stb_image.c
         include/lib/containers/Flat3DArray.hpp
         include/lib/containers/Flat2DArray.hpp
-        include/application/tools/Camera.hpp
+        include/application/renderer/Camera.hpp
         src/application/renderer/Camera.cpp
         include/lib/interfaces/Observer.hpp
         include/lib/interfaces/Observable.hpp
@@ -47,7 +47,7 @@ set(SOURCE_FILES
         include/application/renderer/Quad.hpp
         src/application/renderer/QuadBuffer.cpp
         include/application/renderer/QuadBuffer.hpp
-        include/lib/containers/TQueue.hpp)
+        include/lib/containers/TQueue.hpp src/application/renderer/Mesher.cpp include/application/renderer/Mesher.hpp include/Definitions.hpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(app ${SOURCE_FILES})

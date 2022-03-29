@@ -7,22 +7,20 @@
 
 #include <memory>
 #include <variant>
+#include "Definitions.hpp"
 #include "lib/interfaces/Observer.hpp"
 #include "lib/containers/Flat3DArray.hpp"
 #include "lib/containers/TQueue.hpp"
 
-using ChunkUpdate = Flat3DArray<unsigned short>;
-using WorldUpdate = std::variant<ChunkUpdate>;
-
 class World {
 public:
-    World(std::shared_ptr<TQueue<WorldUpdate>>);
+    World(std::shared_ptr<TQueue<WorldEvent>>);
 
     void generate();
     ~World();
 
 private:
-    std::shared_ptr<TQueue<WorldUpdate>> _queue;
+    std::shared_ptr<TQueue<WorldEvent>> _queue;
 };
 
 

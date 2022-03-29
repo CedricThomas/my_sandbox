@@ -46,11 +46,9 @@ public:
 
     const ApplicationConfig &getConfig() const;
 
-    const RenderingTracker *getRenderingTracker() const;
-
     GLFWwindow *getWindow() const;
 
-    const RenderingTracker &getTracker() const;
+    const RenderingTracker *getRenderingTracker() const;
 
     const ResourcesManager &getResourcesManager() const;
 

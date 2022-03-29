@@ -7,6 +7,8 @@
 
 #include <vector>
 #include <stdexcept>
+#include <iostream>
+#include "spdlog/spdlog.h"
 
 template<typename T>
 class Flat3DArray {
@@ -19,12 +21,12 @@ public:
 
     ~Flat3DArray() = default;
 
-    int get(int x, int y, int z) {
-        return _data[x + _x * (y + _y * z)];
+    T get(int x, int y, int z) const {
+        return _data[x + (_x * _z * y) + (_x * z)];
     }
 
     void set(int x, int y, int z, T value) {
-        _data[x + _x * (y + _y * z)] = value;
+        _data[x + (_x * _z * y) + (_x * z)] = value;
     }
 
     int size() {
@@ -53,7 +55,7 @@ public:
         auto begin = newData.begin();
 
         while (size < x * y * z) {
-            auto block = *((short *) data);
+            auto block = *((unsigned short *) data);
             auto value = *((T *) (static_cast<char*>(data) + sizeof(short)));
             if (size + block > x * y * z) {
                 throw std::runtime_error("Invalid unzip");
@@ -63,6 +65,7 @@ public:
             size += block;
             data = static_cast<char*>(data) + sizeof(short) + sizeof(T);
         }
+
         return Flat3DArray<T>(newData, x, y, z);
     }
 

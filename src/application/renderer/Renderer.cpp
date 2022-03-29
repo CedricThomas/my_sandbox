@@ -10,20 +10,17 @@
 #include "lib/stb_image.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "application/renderer/Vertex.hpp"
-
-#define MAX_QUAD_COUNT 10000
-#define MAX_VERTEX_COUNT (MAX_QUAD_COUNT * 4)
-#define MAX_INDEX_COUNT (MAX_QUAD_COUNT * 6)
+#include "application/renderer/Mesher.hpp"
 
 
-Renderer::Renderer(std::shared_ptr<TQueue<WorldUpdate>> queue) : ARenderer("Renderer"),
+Renderer::Renderer(std::shared_ptr<TQueue<WorldEvent>> queue) : ARenderer("Renderer"),
                                                                  _vao(0),
                                                                  _vbo(0),
                                                                  _ebo(0),
                                                                  _textureAtlas(0),
                                                                  _shader(),
                                                                  _camera(glm::vec3(0.0f, 0.0f, 3.0f)),
-                                                                 _quadBuffer(MAX_QUAD_COUNT),
+                                                                 _quadBuffer(MAX_QUADS_PER_DRAW),
                                                                  _queue(std::move(queue)),
                                                                  _tracker(),
                                                                  _window() {}
@@ -50,7 +47,7 @@ void Renderer::onInit(const Application &application) {
 
     glGenBuffers(1, &_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * MAX_VERTEX_COUNT, nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * MAX_VERTEXES_PER_DRAW, nullptr, GL_DYNAMIC_DRAW);
 
     // position attribute
     glEnableVertexArrayAttrib(_vbo, 0);
@@ -65,8 +62,8 @@ void Renderer::onInit(const Application &application) {
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void *) offsetof(Vertex, TextureIndex));
 
     // pre-allocate and load the index buffer
-    unsigned int indices[MAX_INDEX_COUNT];
-    for (size_t i = 0; (i * 6) < MAX_INDEX_COUNT; i++) {
+    auto indices = new unsigned int[MAX_INDEXES_PER_DRAW];
+    for (size_t i = 0; (i * 6) < MAX_INDEXES_PER_DRAW; i++) {
         indices[i * 6 + 0] = i * 4 + 0;
         indices[i * 6 + 1] = i * 4 + 1;
         indices[i * 6 + 2] = i * 4 + 2;
@@ -76,7 +73,8 @@ void Renderer::onInit(const Application &application) {
     }
     glGenBuffers(1, &_ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_INDEXES_PER_DRAW * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+    delete[] indices;
 
     // texture atlas
     // ---------
@@ -140,59 +138,23 @@ void Renderer::onRender(const Application &application) {
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-    model = glm::rotate(model, glm::radians((float) glfwGetTime() * 20.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+//    model = glm::rotate(model, glm::radians((float) glfwGetTime() * 20.0f), glm::vec3(1.0f, 0.3f, 0.5f));
     _shader.setMat4("model", model);
 
 
     auto data = _queue->pop();
     if (data.has_value()) {
-        if (std::holds_alternative<ChunkUpdate>(data.value())) {
-//            auto chunkUpdate = std::get<ChunkUpdate>(data.value());
-
-            _quadBuffer.emplace_back(Quad(
-                    Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 0.0f), 0.0f),
-                    Vertex(glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 0.0f), 0.0f),
-                    Vertex(glm::vec3(0.5f, 0.5f, -0.5f), glm::vec2(1.0f, 1.0f), 0.0f),
-                    Vertex(glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec2(0.0f, 1.0f), 0.0f)
-            ));
-            _quadBuffer.emplace_back(Quad(
-                    Vertex(glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f), 0.0f),
-                    Vertex(glm::vec3(0.5f, -0.5f, 0.5f), glm::vec2(1.0f, 0.0f), 0.0f),
-                    Vertex(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec2(1.0f, 1.0f), 0.0f),
-                    Vertex(glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec2(0.0f, 1.0f), 0.0f)
-            ));
-            _quadBuffer.emplace_back(Quad(
-                    Vertex(glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec2(1.0f, 0.0f), 0.0f),
-                    Vertex(glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec2(1.0f, 1.0f), 0.0f),
-                    Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 1.0f), 0.0f),
-                    Vertex(glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f), 0.0f)
-            ));
-            _quadBuffer.emplace_back(Quad(
-                    Vertex(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec2(1.0f, 0.0f), 0.0f),
-                    Vertex(glm::vec3(0.5f, 0.5f, -0.5f), glm::vec2(1.0f, 1.0f), 0.0f),
-                    Vertex(glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 1.0f), 0.0f),
-                    Vertex(glm::vec3(0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f), 0.0f)
-            ));
-            _quadBuffer.emplace_back(Quad(
-                    Vertex(glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec2(0.0f, 1.0f), 0.0f),
-                    Vertex(glm::vec3(0.5f, -0.5f, -0.5f), glm::vec2(1.0f, 1.0f), 0.0f),
-                    Vertex(glm::vec3(0.5f, -0.5f, 0.5f), glm::vec2(1.0f, 0.0f), 0.0f),
-                    Vertex(glm::vec3(-0.5f, -0.5f, 0.5f), glm::vec2(0.0f, 0.0f), 0.0f)
-            ));
-            _quadBuffer.emplace_back(Quad(
-                    Vertex(glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec2(0.0f, 1.0f), 0.0f),
-                    Vertex(glm::vec3(0.5f, 0.5f, -0.5f), glm::vec2(1.0f, 1.0f), 0.0f),
-                    Vertex(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec2(1.0f, 0.0f), 0.0f),
-                    Vertex(glm::vec3(-0.5f, 0.5f, 0.5f), glm::vec2(0.0f, 0.0f), 0.0f)
-            ));
-
+        if (std::holds_alternative<Chunk>(data.value())) {
+            auto chunk = std::get<Chunk>(data.value());
+            auto mesh = Mesher::meshChunk(chunk);
+            Mesher::generateQuadBuffer(_quadBuffer, mesh);
             glBindBuffer(GL_ARRAY_BUFFER, _vbo);
             glBufferSubData(GL_ARRAY_BUFFER, 0, (ssize_t) _quadBuffer.getSize(), _quadBuffer.getVertices());
         }
     }
 
     glBindVertexArray(_vao);
-    glDrawElements(GL_TRIANGLES, (ssize_t) _quadBuffer.getIndicesCount(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, (GLsizei) _quadBuffer.getIndicesCount(), GL_UNSIGNED_INT, nullptr);
 
     glBindVertexArray(0);
 }
@@ -203,6 +165,7 @@ void Renderer::onCleanup(const Application &application) {
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &_vao);
     glDeleteBuffers(1, &_vbo);
+    glDeleteBuffers(1, &_ebo);
     _shader.deleteProgram();
 }
 

@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <vector>
+#include "Definitions.hpp"
 #include "Quad.hpp"
 
 class QuadBuffer {
@@ -17,7 +18,7 @@ public:
 
     void clear();
 
-    const float *getVertices() const;
+    VertexArray getVertices() const;
 
     size_t getSize();
 

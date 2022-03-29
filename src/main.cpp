@@ -1,28 +1,26 @@
 #include "spdlog/spdlog.h"
 #include "application/Application.hpp"
-#include "application/renderer//Renderer.hpp"
+#include "application/renderer/Renderer.hpp"
 #include "server/Server.hpp"
 #include "world/World.hpp"
 #include "lib/Pool.hpp"
-#include "lib/containers/Flat3DArray.hpp"
 #include "lib/containers/TQueue.hpp"
-#include "application/renderer/Vertex.hpp"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 void start() {
-    auto queue = std::make_shared<TQueue<WorldUpdate>>();
+    auto queue = std::make_shared<TQueue<WorldEvent>>();
 
-    auto &renderer = Application::getInstance();
-    renderer.configure({
+    auto &application = Application::getInstance();
+    application.configure({
                                SCR_WIDTH,
                                SCR_HEIGHT,
                                "Application",
                                "../resources",
                        });
-    renderer.registerRenderer(std::make_unique<Renderer>(queue));
+    application.registerRenderer(std::make_unique<Renderer>(queue));
 
     Pool pool(1, 2);
 
@@ -30,7 +28,7 @@ void start() {
         World world(queue);
         world.generate();
     });
-    renderer.start();
+    application.start();
     pool.shutdown();
 }
 

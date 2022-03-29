@@ -6,8 +6,8 @@
 #include <stdexcept>
 #include "application/renderer/QuadBuffer.hpp"
 
-const float *QuadBuffer::getVertices() const {
-    return reinterpret_cast<const float *>(_quads.data());
+VertexArray QuadBuffer::getVertices() const {
+    return reinterpret_cast<VertexArray>(_quads.data());
 }
 
 QuadBuffer::QuadBuffer(size_t capacity)
