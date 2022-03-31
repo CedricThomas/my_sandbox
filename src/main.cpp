@@ -1,7 +1,9 @@
+#define GLM_FORCE_CTOR_INIT
+#include <glm/glm.hpp>
+
 #include "spdlog/spdlog.h"
 #include "application/Application.hpp"
 #include "application/renderer/Renderer.hpp"
-#include "server/Server.hpp"
 #include "world/World.hpp"
 #include "lib/Pool.hpp"
 #include "lib/containers/TQueue.hpp"
@@ -34,6 +36,8 @@ void start() {
 
 int main()
 {
+    glm::vec3 vec;
+    ChunkMap _chunkMap;
     spdlog::set_level(spdlog::level::debug); // Set global log level to debug
     start();
     return 0;

@@ -12,7 +12,6 @@
 #include "application/renderer/Vertex.hpp"
 #include "application/renderer/Mesher.hpp"
 
-
 Renderer::Renderer(std::shared_ptr<TQueue<WorldEvent>> queue) : ARenderer("Renderer"),
                                                                  _vao(0),
                                                                  _vbo(0),
@@ -20,7 +19,8 @@ Renderer::Renderer(std::shared_ptr<TQueue<WorldEvent>> queue) : ARenderer("Rende
                                                                  _textureAtlas(0),
                                                                  _shader(),
                                                                  _camera(glm::vec3(0.0f, 0.0f, 3.0f)),
-                                                                 _quadBuffer(MAX_QUADS_PER_DRAW),
+                                                                 _quadsMap(),
+                                                                _mesher(_quadsMap),
                                                                  _queue(std::move(queue)),
                                                                  _tracker(),
                                                                  _window() {}
@@ -136,25 +136,26 @@ void Renderer::onRender(const Application &application) {
                     projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
     _shader.setMat4("view", _camera.getViewMatrix());
 
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-//    model = glm::rotate(model, glm::radians((float) glfwGetTime() * 20.0f), glm::vec3(1.0f, 0.3f, 0.5f));
-    _shader.setMat4("model", model);
-
-
     auto data = _queue->pop();
     if (data.has_value()) {
         if (std::holds_alternative<Chunk>(data.value())) {
             auto chunk = std::get<Chunk>(data.value());
-            auto mesh = Mesher::meshChunk(chunk);
-            Mesher::generateQuadBuffer(_quadBuffer, mesh);
-            glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, (ssize_t) _quadBuffer.getSize(), _quadBuffer.getVertices());
+            _mesher.insertChunk(chunk);
         }
     }
 
     glBindVertexArray(_vao);
-    glDrawElements(GL_TRIANGLES, (GLsizei) _quadBuffer.getIndicesCount(), GL_UNSIGNED_INT, nullptr);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+    for (auto &chunk : _quadsMap) {
+        auto position = chunk.first;
+        glBufferSubData(GL_ARRAY_BUFFER, 0, (ssize_t) _quadsMap[position].getSize(), _quadsMap[position].getVertices());
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(position.x * CHUNK_GAP, position.y, position.z * CHUNK_GAP));
+        _shader.setMat4("model", model);
+
+        glDrawElements(GL_TRIANGLES, (GLsizei) chunk.second.getIndicesCount(), GL_UNSIGNED_INT, nullptr);
+    }
 
     glBindVertexArray(0);
 }

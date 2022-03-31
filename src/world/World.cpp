@@ -15,13 +15,21 @@ World::~World() {
 void World::generate() {
     unsigned short max_block = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
     unsigned short number = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_WIDTH;
-    for (unsigned short i = number; i <= number; i += 16) {
+    for (unsigned short i = number; i <= number; i += 1) {
         unsigned short data[] = {
                 i, 1,
                 static_cast<unsigned short>((max_block - i)), 0,
         };
-        auto chunk = Chunk::unzip(data, CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
-        _queue->push(chunk);
-        sleep(1);
+        auto chunkData = Flat3DArray<unsigned short>::unzip(data, CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
+        Chunk chunk1 = {
+                glm::vec3(0, 0, 0),
+                chunkData,
+        };
+        _queue->push(chunk1);
+        Chunk chunk2 = {
+                glm::vec3(0, 0, 1),
+                chunkData,
+        };
+        _queue->push(chunk2);
     }
 }

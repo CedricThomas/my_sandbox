@@ -47,7 +47,7 @@ set(SOURCE_FILES
         include/application/renderer/Quad.hpp
         src/application/renderer/QuadBuffer.cpp
         include/application/renderer/QuadBuffer.hpp
-        include/lib/containers/TQueue.hpp src/application/renderer/Mesher.cpp include/application/renderer/Mesher.hpp include/Definitions.hpp)
+        include/lib/containers/TQueue.hpp src/application/renderer/Mesher.cpp include/application/renderer/Mesher.hpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(app ${SOURCE_FILES})

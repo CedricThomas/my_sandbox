@@ -5,13 +5,16 @@
 #ifndef APP_RENDERER_HPP
 #define APP_RENDERER_HPP
 
-#include "Definitions.hpp"
 #include "application/ARenderer.hpp"
 #include "application/tools/Shader.hpp"
 #include "Camera.hpp"
 #include "application/tools/RenderingTracker.hpp"
 #include "world/World.hpp"
 #include "QuadBuffer.hpp"
+#include "Mesher.hpp"
+
+#define MAX_VERTEXES_PER_DRAW (MAX_QUADS_PER_DRAW * 4)
+#define MAX_INDEXES_PER_DRAW (MAX_QUADS_PER_DRAW * 6)
 
 class Renderer: public ARenderer {
 public:
@@ -35,7 +38,8 @@ public:
     GLuint _textureAtlas;
     Shader _shader;
     Camera _camera;
-    QuadBuffer _quadBuffer;
+    QuadsMap _quadsMap;
+    Mesher _mesher;
     std::shared_ptr<TQueue<WorldEvent>> _queue;
 
     // Application resources

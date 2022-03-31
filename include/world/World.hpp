@@ -7,10 +7,22 @@
 
 #include <memory>
 #include <variant>
-#include "Definitions.hpp"
 #include "lib/interfaces/Observer.hpp"
 #include "lib/containers/Flat3DArray.hpp"
 #include "lib/containers/TQueue.hpp"
+#include "glm/gtx/hash.hpp"
+#include "glm/vec3.hpp"
+
+#define CHUNK_WIDTH 16
+#define CHUNK_HEIGHT 255
+
+struct Chunk {
+    glm::vec3 position;
+    Flat3DArray<unsigned short> data;
+};
+using ChunkMap = std::unordered_map<glm::vec3, Chunk, std::hash<glm::vec3>>;
+
+using WorldEvent = std::variant<Chunk>;
 
 class World {
 public:

@@ -7,12 +7,17 @@
 
 #include <cstddef>
 #include <vector>
-#include "Definitions.hpp"
+#include <unordered_map>
+#include "glm/gtx/hash.hpp"
 #include "Quad.hpp"
+
+#define MAX_QUADS_PER_DRAW 195840
+
+using VertexArray = const float *;
 
 class QuadBuffer {
 public:
-    explicit QuadBuffer(size_t capacity);
+    explicit QuadBuffer(size_t capacity = MAX_QUADS_PER_DRAW);
 
     void emplace_back(const Quad &quad);
 
@@ -29,5 +34,6 @@ private:
     std::vector<Quad> _quads;
 };
 
+using QuadsMap = std::unordered_map<glm::vec3, QuadBuffer, std::hash<glm::vec3>>;
 
 #endif //APP_QUADBUFFER_HPP
