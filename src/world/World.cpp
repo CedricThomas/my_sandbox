@@ -14,22 +14,42 @@ World::~World() {
 
 void World::generate() {
     unsigned short max_block = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
-    unsigned short number = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_WIDTH;
-    for (unsigned short i = number; i <= number; i += 1) {
-        unsigned short data[] = {
-                i, 1,
-                static_cast<unsigned short>((max_block - i)), 0,
-        };
-        auto chunkData = Flat3DArray<unsigned short>::unzip(data, CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
-        Chunk chunk1 = {
-                glm::vec3(0, 0, 0),
-                chunkData,
-        };
-        _queue->push(chunk1);
-        Chunk chunk2 = {
-                glm::vec3(0, 0, 1),
-                chunkData,
-        };
-        _queue->push(chunk2);
+    unsigned short number = CHUNK_WIDTH * CHUNK_WIDTH * 125;
+    unsigned short data[] = {
+            number, 1,
+            static_cast<unsigned short>((max_block - number)), 0,
+    };
+    int radius = 2;
+    for (int z = 0; z < radius; z++) {
+        for (int x = 0; x < radius; x++) {
+            auto chunkData = Flat3DArray<unsigned short>::unzip(data, CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
+            Chunk chunk = {
+                    glm::vec3(x, 0, z),
+                    chunkData,
+            };
+            _queue->push(chunk);
+        }
+    }
+    while (1) {
+        for (int z = 0; z < radius; z++) {
+            for (int x = 0; x < radius; x++) {
+                ChunkRemove chunkRemove = {
+                        glm::vec3(x, 0, z),
+                };
+                _queue->push(chunkRemove);
+                sleep(4);
+            }
+        }
+        for (int z = 0; z < radius; z++) {
+            for (int x = 0; x < radius; x++) {
+                auto chunkData = Flat3DArray<unsigned short>::unzip(data, CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
+                Chunk chunk = {
+                        glm::vec3(x, 0, z),
+                        chunkData,
+                };
+                _queue->push(chunk);
+                sleep(4);
+            }
+        }
     }
 }

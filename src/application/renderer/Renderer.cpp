@@ -141,6 +141,12 @@ void Renderer::onRender(const Application &application) {
         if (std::holds_alternative<Chunk>(data.value())) {
             auto chunk = std::get<Chunk>(data.value());
             _mesher.insertChunk(chunk);
+            _mesher.generateVertexes();
+        }
+        if (std::holds_alternative<ChunkRemove>(data.value())) {
+            auto chunk = std::get<ChunkRemove>(data.value());
+            _mesher.removeChunk(chunk.position);
+            _mesher.generateVertexes();
         }
     }
 

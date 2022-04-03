@@ -20,9 +20,12 @@ struct Chunk {
     glm::vec3 position;
     Flat3DArray<unsigned short> data;
 };
+struct ChunkRemove {
+    glm::vec3 position;
+};
 using ChunkMap = std::unordered_map<glm::vec3, Chunk, std::hash<glm::vec3>>;
 
-using WorldEvent = std::variant<Chunk>;
+using WorldEvent = std::variant<Chunk, ChunkRemove>;
 
 class World {
 public:
