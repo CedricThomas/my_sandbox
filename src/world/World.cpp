@@ -33,7 +33,7 @@ void World::generate() {
     while (1) {
         for (int z = 0; z < radius; z++) {
             for (int x = 0; x < radius; x++) {
-                ChunkRemove chunkRemove = {
+                UnloadChunk chunkRemove = {
                         glm::vec3(x, 0, z),
                 };
                 _queue->push(chunkRemove);

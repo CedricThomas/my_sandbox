@@ -91,11 +91,11 @@ void Renderer::onInit(const Application &application) {
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char *data = stbi_load(resourcesManager.getResourcePath("textures/wall.jpg").c_str(), &width, &height,
+    unsigned char *data = stbi_load(resourcesManager.getResourcePath("textures/brick.png").c_str(), &width, &height,
                                     &nrChannels,
                                     0);
     if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         spdlog::error("[{}] Error loading texture", this->getName());
@@ -143,8 +143,8 @@ void Renderer::onRender(const Application &application) {
             _mesher.insertChunk(chunk);
             _mesher.generateVertexes();
         }
-        if (std::holds_alternative<ChunkRemove>(data.value())) {
-            auto chunk = std::get<ChunkRemove>(data.value());
+        if (std::holds_alternative<UnloadChunk>(data.value())) {
+            auto chunk = std::get<UnloadChunk>(data.value());
             _mesher.removeChunk(chunk.position);
             _mesher.generateVertexes();
         }
