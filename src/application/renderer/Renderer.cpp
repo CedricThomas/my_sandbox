@@ -9,7 +9,7 @@
 #include "application/Application.hpp"
 #include "lib/stb_image.h"
 #include "glm/gtc/matrix_transform.hpp"
-#include "application/renderer/Vertex.hpp"
+#include "application/renderer/containers/Vertex.hpp"
 #include "application/renderer/Mesher.hpp"
 
 Renderer::Renderer(std::shared_ptr<TQueue<WorldEvent>> queue) : ARenderer("Renderer"),

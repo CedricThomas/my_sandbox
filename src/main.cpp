@@ -12,6 +12,8 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+
+// TODO send signal to threads to stop them
 void start() {
     auto queue = std::make_shared<TQueue<WorldEvent>>();
 

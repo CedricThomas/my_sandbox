@@ -9,7 +9,7 @@
 #include "GLFW/glfw3.h"
 #include "ARenderer.hpp"
 #include "lib/utils/Provider.hpp"
-#include "application/tools/RenderingTracker.hpp"
+#include "application/renderer/RenderingTracker.hpp"
 #include "lib/utils/ResourcesManager.hpp"
 
 #include <map>

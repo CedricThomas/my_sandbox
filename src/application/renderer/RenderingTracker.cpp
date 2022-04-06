@@ -2,7 +2,7 @@
 // Created by arzad on 26/02/2022.
 //
 
-#include "application/tools/RenderingTracker.hpp"
+#include "application/renderer/RenderingTracker.hpp"
 
 RenderingTracker::RenderingTracker() : _firstFrame(true),
                                        _firstMouse(true),

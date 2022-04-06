@@ -4,7 +4,7 @@
 
 #include <cstring>
 #include <stdexcept>
-#include "application/renderer/QuadBuffer.hpp"
+#include "application/renderer/containers/QuadBuffer.hpp"
 
 VertexArray QuadBuffer::getVertices() const {
     return reinterpret_cast<VertexArray>(_quads.data());

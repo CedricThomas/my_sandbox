@@ -6,11 +6,11 @@
 #define APP_RENDERER_HPP
 
 #include "application/ARenderer.hpp"
-#include "application/tools/Shader.hpp"
+#include "Shader.hpp"
 #include "Camera.hpp"
-#include "application/tools/RenderingTracker.hpp"
+#include "RenderingTracker.hpp"
 #include "world/World.hpp"
-#include "QuadBuffer.hpp"
+#include "application/renderer/containers/QuadBuffer.hpp"
 #include "Mesher.hpp"
 
 #define MAX_VERTEXES_PER_DRAW (MAX_QUADS_PER_DRAW * 4)

@@ -16,16 +16,17 @@ set(SOURCE_FILES
         include/application/Application.hpp
         src/application/ApplicationException.cpp
         include/application/ApplicationException.hpp
-        src/application/ARenderer.cpp
+        src/application/renderer/ARenderer.cpp
         include/application/ARenderer.hpp
         src/application/renderer/Renderer.cpp
         include/application/renderer/Renderer.hpp
         include/lib/utils/Provider.hpp
-        include/application/tools/Shader.hpp
-        src/application/tools/Shader.cpp
+        include/application/renderer/Shader.hpp
+        src/application/renderer/Shader.cpp
         src/lib/utils/ResourcesManager.cpp
         include/lib/utils/ResourcesManager.hpp
         include/lib/stb_image.h
+        include/lib/stb_image_write.h
         src/lib/stb_image.c
         include/lib/containers/Flat3DArray.hpp
         include/lib/containers/Flat2DArray.hpp
@@ -37,17 +38,19 @@ set(SOURCE_FILES
         include/server/Server.hpp
         src/world/World.cpp
         include/world/World.hpp
-        src/application/tools/RenderingTracker.cpp
-        include/application/tools/RenderingTracker.hpp
+        src/application/renderer/RenderingTracker.cpp
+        include/application/renderer/RenderingTracker.hpp
         src/lib/Pool.cpp
         include/lib/Pool.hpp
-        src/application/renderer/Vertex.cpp
-        include/application/renderer/Vertex.hpp
-        src/application/renderer/Quad.cpp
-        include/application/renderer/Quad.hpp
-        src/application/renderer/QuadBuffer.cpp
-        include/application/renderer/QuadBuffer.hpp
-        include/lib/containers/TQueue.hpp src/application/renderer/Mesher.cpp include/application/renderer/Mesher.hpp)
+        src/application/renderer/containers/Vertex.cpp
+        include/application/renderer/containers/Vertex.hpp
+        src/application/renderer/containers/Quad.cpp
+        include/application/renderer/containers/Quad.hpp
+        src/application/renderer/containers/QuadBuffer.cpp
+        include/application/renderer/containers/QuadBuffer.hpp
+        include/lib/containers/TQueue.hpp
+        src/application/renderer/Mesher.cpp
+        include/application/renderer/Mesher.hpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(app ${SOURCE_FILES})

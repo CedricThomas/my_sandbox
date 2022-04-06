@@ -7,7 +7,7 @@
 
 #include <unordered_set>
 #include "glm/gtx/hash.hpp"
-#include "QuadBuffer.hpp"
+#include "application/renderer/containers/QuadBuffer.hpp"
 #include "world/World.hpp"
 #include "lib/containers/Flat3DArray.hpp"
 
