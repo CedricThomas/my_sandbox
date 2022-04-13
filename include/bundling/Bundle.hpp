@@ -10,9 +10,7 @@
 #include "world/blocks/BlockTemplate.hpp"
 
 using BundleID = unsigned short;
-
-using BlockTemplateKey = std::pair<BundleID , BlockTemplateID>;
-using BlockTemplateKeyHash = PairHash<BundleID , BlockTemplateID>;
+using BlockTemplateBundledID = std::pair<BundleID , BlockTemplateID>;
 
 struct Bundle {
     Bundle(BundleID id, std::string root, const std::string &name, const std::vector<BlockTemplate> &blocks);

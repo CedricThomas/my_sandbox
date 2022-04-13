@@ -37,8 +37,8 @@ void Renderer::onInit(const Application &application) {
     // build and compile our shader program
     // ------------------------------------
     _shader = Shader(
-            ResourcesFinder(SHADER).append("voxel.vert").get().path,
-            ResourcesFinder(SHADER).append("voxel.frag").get().path
+            ResourcesFinder(SHADERS_FOLDER).append("voxel.vert").get().path,
+            ResourcesFinder(SHADERS_FOLDER).append("voxel.frag").get().path
     );
 
     // generate and bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
@@ -91,7 +91,7 @@ void Renderer::onInit(const Application &application) {
     int width, height, nrChannels;
 //    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char *data = stbi_load(ResourcesFinder(TEXTURE).append(BLOCK).append("stone_bricks.png").get().path.c_str(), &width, &height,
+    unsigned char *data = stbi_load(ResourcesFinder(TEXTURES_FOLDER).append(BLOCKS_FOLDER).append("stone_bricks.png").get().path.c_str(), &width, &height,
                                     &nrChannels,
                                     0);
     if (data) {

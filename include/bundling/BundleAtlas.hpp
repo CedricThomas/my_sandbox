@@ -8,13 +8,12 @@
 #include <unordered_map>
 #include "Bundle.hpp"
 
-
 class BundleAtlas {
 public:
     void registerBundle(const Bundle &bundle);
-    BlockTemplate& operator[](BlockTemplateKey key);
+    BlockTemplate& operator[](BlockTemplateBundledID key);
 
-    static BundleAtlas *getInstance();
+    static BundleAtlas &getInstance();
     BundleAtlas(BundleAtlas const &) = delete;
     void operator=(BundleAtlas const &) = delete;
 private:

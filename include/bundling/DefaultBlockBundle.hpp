@@ -18,11 +18,11 @@ const Bundle DEFAULT_BUNDLE = {
         DEFAULT_BUNDLE_ROOT,
         DEFAULT_BUNDLE_NAME,
         {
-                BlockTemplate(0, "", NONE, true, false),
-                BlockTemplate(1, "dirt"),
-                BlockTemplate(2, "grass", BOTTOM_TOP_SIDE),
-                BlockTemplate(3, "stone"),
-                BlockTemplate(4, "stone_brick"),
+                BlockTemplate(0, TextureMapping{""}, true, false),
+                BlockTemplate(1, TextureMapping{"dirt"}),
+                BlockTemplate(2, TextureMapping{"grass_block_top", "dirt", "grass_block_side"}),
+                BlockTemplate(3, TextureMapping{"stone"}),
+                BlockTemplate(4, TextureMapping{"stone_brick"}),
         }
 };
 

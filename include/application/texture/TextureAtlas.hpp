@@ -11,21 +11,39 @@
 #include "glm/vec4.hpp"
 #include "world/blocks/BlockTemplate.hpp"
 #include "bundling/Bundle.hpp"
+#include "Texture.hpp"
 
+using TextureBundledID = std::pair<BundleID, std::string>;
+using TextureBundledIDHash = PairHash<BundleID, std::string>;
+
+// TODO disable global atlas and load in application constructor
 class TextureAtlas {
 public:
+    static TextureAtlas &getInstance();
 
-    static TextureAtlas *getInstance();
     TextureAtlas(const TextureAtlas &) = delete;
+
     void operator=(const TextureAtlas &) = delete;
+
 private:
     TextureAtlas() = default;
+
+public:
+    void loadBundleBlockTextures(const Bundle &bundle);
+
+    void generateAtlas();
+
+    unsigned char *getAtlas() const;
+
+    const glm::vec4 getBlockTextureRegion(const BundleID &id, const std::string &textureName) const;
+
     struct TextureRegion {
-        Resource file;
+        Texture texture;
         glm::vec4 region;
     };
     unsigned char *_data;
-    std::unordered_map<BlockTemplateKey, TextureRegion, BlockTemplateKeyHash> _texturesLocations;
+    unsigned int _width;
+    std::unordered_map<TextureBundledID, TextureRegion, TextureBundledIDHash> _texturesLocations;
 };
 
 

@@ -11,26 +11,38 @@
 
 using BlockTemplateID = unsigned short;
 
-enum TexturingType {
-    NONE,
-    UNIFORM,
-    BOTTOM_TOP_SIDE,
-    ALL,
+struct TextureMapping {
+    std::string top;
+    std::string bottom;
+    std::string left;
+    std::string right;
+    std::string front;
+    std::string back;
+
+    TextureMapping(
+            std::string top,
+            std::string bottom,
+            std::string left,
+            std::string right,
+            std::string front,
+            std::string back
+    );
+
+    explicit TextureMapping(const std::string &all);
+    TextureMapping(const std::string &top, const std::string &bottom, const std::string &sides);
 };
-using TexturingType = enum TexturingType;
 
 struct BlockTemplate {
+
     BlockTemplate(
             BlockTemplateID id,
-            std::string textureName,
-            TexturingType texturingType = UNIFORM,
+            const TextureMapping &textureMapping,
             bool transparent = false,
             bool solid = true
     );
 
     BlockTemplateID id;
-    std::string textureName;
-    TexturingType texturingType;
+    TextureMapping textureMapping;
     bool transparent;
     bool solid;
 };

@@ -11,12 +11,12 @@
 #include <string>
 #include "Resource.hpp"
 
-#define TEXTURE "textures"
-#define BLOCK "block"
-#define ENTITY "entity"
-#define ITEM "item"
+#define TEXTURES_FOLDER "textures"
+#define BLOCKS_FOLDER "block"
+#define ENTITIES_FOLDER "entity"
+#define ITEMS_FOLDER "item"
 
-#define SHADER "shaders"
+#define SHADERS_FOLDER "shaders"
 
 class ResourcesFinder {
 public:

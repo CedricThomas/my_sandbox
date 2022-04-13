@@ -8,11 +8,11 @@ void BundleAtlas::registerBundle(const Bundle &bundle) {
     _atlas.insert(std::make_pair(bundle.ID, bundle));
 }
 
-BlockTemplate &BundleAtlas::operator[](BlockTemplateKey key) {
-    return _atlas.at(key.first).blocks.at(key.second);
+BlockTemplate &BundleAtlas::operator[](BlockTemplateBundledID id) {
+    return _atlas.at(id.first).blocks.at(id.second);
 }
 
-BundleAtlas *BundleAtlas::getInstance() {
+BundleAtlas &BundleAtlas::getInstance() {
     static BundleAtlas instance;
-    return &instance;
+    return instance;
 }
