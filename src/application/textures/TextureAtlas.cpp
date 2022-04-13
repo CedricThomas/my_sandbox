@@ -37,9 +37,9 @@ void TextureAtlas::loadBundleBlockTextures(const Bundle &bundle) {
         } else if (_width != width) {
             throw std::runtime_error("Texture: " + blockTexture.path + " has different width");
         }
-        spdlog::info("Loading texture: {}", blockTexture.path);
+        spdlog::info("Loading texture {} from bundle {}", blockTexture.path, bundle.ID);
         _texturesLocations.insert({
-                                          std::make_pair(bundle.ID, blockTexture.name),
+                                          std::make_pair(bundle.ID, blockTexture.basename),
                                           {
                                                   Texture(data, width, height, nrChannels),
                                                   glm::vec4(),
@@ -72,18 +72,19 @@ void TextureAtlas::generateAtlas() {
                 _data[(atlasPixelY * atlasTextureWidth) + atlasPixelX + 3] = texture[(texturePixelY * _width * 4) + (texturePixelX * 4) + 3];
             }
         }
+        textureRegion.region = glm::vec4(
+                (float)(atlasTextureX * _width) / (float)(atlasSize * _width),
+                (float)(atlasTextureY * _width) / (float)(atlasSize * _width),
+                (float)(_width) / (float)(atlasSize * _width),
+                (float)(_width) / (float)(atlasSize * _width)
+        );
         textureIndex += 1;
         atlasTextureX = textureIndex % atlasSize;
         atlasTextureY = textureIndex / atlasSize;
-        textureRegion.region = glm::vec4(
-                atlasTextureX * _width / atlasSize * _width,
-                atlasTextureY * _width / atlasSize * _width,
-                _width / atlasSize * _width,
-                _width / atlasSize * _width
-        );
     }
     _atlasWidth = atlasSize * _width;
     _atlasHeight = atlasSize * _width;
+    stbi_write_png("output.png", atlasSize*_width, atlasSize*_width, 4, _data, atlasSize*_width*4);
 }
 
 const glm::vec4 TextureAtlas::getBlockTextureRegion(const BundleID &id, const std::string &textureName) const {

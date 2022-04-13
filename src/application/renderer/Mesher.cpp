@@ -6,7 +6,7 @@
 
 Mesher::Mesher(QuadsMap &quadsMap) : _quadsMap(quadsMap), _chunkMap(), _meshMap(), _meshUpdates() {}
 
-QuadBuffer Mesher::generateQuadBuffer(const Mesh &mesh, const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas) {
+QuadBuffer Mesher::generateQuadBuffer(const Chunk &chunk, const Mesh &mesh, const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas) {
     QuadBuffer quads;
     for (int y = 0; y < CHUNK_HEIGHT; y++) {
         for (int x = 0; x < CHUNK_WIDTH; x++) {
@@ -14,76 +14,84 @@ QuadBuffer Mesher::generateQuadBuffer(const Mesh &mesh, const BundleAtlas &bundl
                 unsigned char block = mesh.get(x, y, z);
                 if (block == 0)
                     continue;
+                auto blockID = chunk.data.get(x, y, z);
+                auto blockTemplate = bundleAtlas.getBlockTemplate(blockID);
                 if (block & BACK_SIDE) {
+                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.back);
                     quads.emplace_back(Quad(
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(0.0f, 0.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0], region[1] + region[3]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(1.0f, 0.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0] + region[2], region[1] + region[3]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(1.0f, 1.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0] + region[2],  region[1]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(0.0f, 1.0f), 0.0f)
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0],  region[1]), 0.0f)
                     ));
                 }
                 if (block & FRONT_SIDE) {
+                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.front);
                     quads.emplace_back(Quad(
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(0.0f, 0.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0], region[1] + region[3]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(1.0f, 0.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2], region[1] + region[3]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(1.0f, 1.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2],  region[1]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(0.0f, 1.0f), 0.0f)
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0],  region[1]), 0.0f)
                     ));
                 }
                 if (block & LEFT_SIDE) {
+                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.left);
                     quads.emplace_back(Quad(
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(1.0f, 0.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2],  region[1]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(1.0f, 1.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0],  region[1]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(0.0f, 1.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0],  region[1]+ region[2]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(0.0f, 0.0f), 0.0f)
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2],  region[1]+ region[2]), 0.0f)
                     ));
                 }
                 if (block & RIGHT_SIDE) {
+                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.right);
                     quads.emplace_back(Quad(
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(1.0f, 0.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2],  region[1]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(1.0f, 1.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0],  region[1]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(0.0f, 1.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0],  region[1] + region[3]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(0.0f, 0.0f), 0.0f)
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2],  region[1] + region[3]), 0.0f)
                     ));
                 }
                 if (block & BOTTOM_SIDE) {
+                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.bottom);
                     quads.emplace_back(Quad(
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(0.0f, 1.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0], region[1]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(1.0f, 1.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0] + region[2], region[1]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(1.0f, 0.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2], region[1] + region[3]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(0.0f, 0.0f), 0.0f)
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0], region[1] + region[3]), region[1] + region[3])
                     ));
                 }
                 if (block & TOP_SIDE) {
+                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.top);
                     quads.emplace_back(Quad(
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(0.0f, 1.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0], region[1]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(1.0f, 1.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0] + region[2], region[1]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(1.0f, 0.0f), 0.0f),
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2], region[1] + region[3]), 0.0f),
                             Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(0.0f, 0.0f), 0.0f)
+                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0], region[1] + region[3]), 0.0f)
                     ));
                 }
             }
@@ -98,24 +106,25 @@ Mesh Mesher::meshChunk(const Chunk &chunk) {
     for (int y = 0; y < CHUNK_HEIGHT; y++) {
         for (int x = 0; x < CHUNK_WIDTH; x++) {
             for (int z = 0; z < CHUNK_WIDTH; z++) {
+
                 // if the current block is empty skip it
-                if (blocks.get(x, y, z) == 0)
+                if (blocks.get(x, y, z).second == 0)
                     continue;
                 unsigned char block = 0;
                 // if the adjacent block is not empty, doesnt add the face to the mesh
                 // if the adjacent block is empty, add the face to the mesh
                 // if the adjacent block is outside the blocks, add the face to the mesh
-                if (y == 0 || blocks.get(x, y - 1, z) == 0)
+                if (y == 0 || blocks.get(x, y - 1, z).second == 0)
                     block |= BOTTOM_SIDE;
-                if (y == CHUNK_HEIGHT - 1 || blocks.get(x, y + 1, z) == 0)
+                if (y == CHUNK_HEIGHT - 1 || blocks.get(x, y + 1, z).second == 0)
                     block |= TOP_SIDE;
-                if (x == 0 || blocks.get(x - 1, y, z) == 0)
+                if (x == 0 || blocks.get(x - 1, y, z).second == 0)
                     block |= LEFT_SIDE;
-                if (x == CHUNK_WIDTH - 1 || blocks.get(x + 1, y, z) == 0)
+                if (x == CHUNK_WIDTH - 1 || blocks.get(x + 1, y, z).second == 0)
                     block |= RIGHT_SIDE;
-                if (z == CHUNK_WIDTH - 1 || blocks.get(x, y, z + 1) == 0)
+                if (z == CHUNK_WIDTH - 1 || blocks.get(x, y, z + 1).second == 0)
                     block |= FRONT_SIDE;
-                if (z == 0 || blocks.get(x, y, z - 1) == 0)
+                if (z == 0 || blocks.get(x, y, z - 1).second == 0)
                     block |= BACK_SIDE;
                 mesh.set(x, y, z, block);
             }
@@ -171,7 +180,7 @@ void Mesher::generateVertexes(const BundleAtlas &bundleAtlas, const TextureAtlas
             _quadsMap.erase(update);
             continue;
         }
-        auto buffer = generateQuadBuffer(mesh->second, bundleAtlas, textureAtlas);
+        auto buffer = generateQuadBuffer(_chunkMap.at(update), mesh->second, bundleAtlas, textureAtlas);
         _quadsMap.emplace(update, buffer).first->second = buffer;
     }
     _meshUpdates.clear();
@@ -194,12 +203,12 @@ bool Mesher::generateChunkSideMesh(const glm::vec3 &position, int side) {
         for (auto xz = 0; xz < CHUNK_WIDTH; xz++) {
             // choose the side axe
             if (side & (LEFT_SIDE | RIGHT_SIDE)) {
-                if (chunk.data.get(xOffset, y, xz) != 0) {
+                if (chunk.data.get(xOffset, y, xz).second != 0) {
                     mesh.set(xOffset, y, xz, mesh.get(xOffset, y, xz) | side);
                     update = true;
                 }
             } else {
-                if (chunk.data.get(xz, y, zOffset) != 0) {
+                if (chunk.data.get(xz, y, zOffset).second != 0) {
                     mesh.set(xz, y, zOffset, mesh.get(xz, y, zOffset) | side);
                     update = true;
                 }

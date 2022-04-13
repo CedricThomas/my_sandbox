@@ -13,13 +13,14 @@
 #include "glm/gtx/hash.hpp"
 #include "glm/vec3.hpp"
 #include "world/blocks/BlockTemplate.hpp"
+#include "bundling/Bundle.hpp"
 
 #define CHUNK_WIDTH 16
 #define CHUNK_HEIGHT 255
 
 struct Chunk {
     glm::vec3 position;
-    Flat3DArray<BlockTemplateID> data;
+    Flat3DArray<BlockTemplateBundledID> data;
 };
 
 using LoadChunk = Chunk;

@@ -11,7 +11,7 @@
 class BundleAtlas {
 public:
     void registerBundle(const Bundle &bundle);
-    BlockTemplate& operator[](BlockTemplateBundledID key);
+    const BlockTemplate &getBlockTemplate(BlockTemplateBundledID id) const;
 
     static BundleAtlas &getInstance();
     BundleAtlas(BundleAtlas const &) = delete;

@@ -39,7 +39,7 @@ private:
     // mesh a single chunk and return it
     static Mesh meshChunk(const Chunk &chunk);
     // generate a single quad buffer and return it
-    static QuadBuffer generateQuadBuffer(const Mesh &mesh, const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas);
+    static QuadBuffer generateQuadBuffer(const Chunk &chunk, const Mesh &mesh, const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas);
 
     // generate a chunk side mesh from the mesh map
     // it returns true if an update is needed
