@@ -1,20 +1,23 @@
-#define GLM_FORCE_CTOR_INIT
-#include <glm/glm.hpp>
-
 #include "spdlog/spdlog.h"
 #include "application/Application.hpp"
 #include "application/renderer/Renderer.hpp"
 #include "world/World.hpp"
 #include "lib/Pool.hpp"
 #include "lib/containers/TQueue.hpp"
+#include "lib/resources/ResourcesFinder.hpp"
+#include "bundling/DefaultBlockBundle.hpp"
+#include "bundling/BundleAtlas.hpp"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
+const char *RESOURCES_FOLDER = "../resources";
 
 // TODO send signal to threads to stop them
 void start() {
+    ResourcesFinder::root(RESOURCES_FOLDER);
+    BundleAtlas::getInstance()->registerBundle(DEFAULT_BUNDLE);
+
     auto queue = std::make_shared<TQueue<WorldEvent>>();
 
     auto &application = Application::getInstance();
@@ -22,7 +25,6 @@ void start() {
                                SCR_WIDTH,
                                SCR_HEIGHT,
                                "Application",
-                               "../resources",
                        });
     application.registerRenderer(std::make_unique<Renderer>(queue));
 
@@ -38,8 +40,6 @@ void start() {
 
 int main()
 {
-    glm::vec3 vec;
-    ChunkMap _chunkMap;
     spdlog::set_level(spdlog::level::debug); // Set global log level to debug
     start();
     return 0;

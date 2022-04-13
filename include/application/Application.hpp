@@ -8,9 +8,7 @@
 #include "lib/glad.h"
 #include "GLFW/glfw3.h"
 #include "ARenderer.hpp"
-#include "lib/utils/Provider.hpp"
 #include "application/renderer/RenderingTracker.hpp"
-#include "lib/utils/ResourcesManager.hpp"
 
 #include <map>
 #include <string>
@@ -35,7 +33,6 @@ public:
         int width;
         int height;
         std::string title;
-        std::string resourcesFolder;
     };
 
     void configure(const ApplicationConfig &config);
@@ -49,8 +46,6 @@ public:
     GLFWwindow *getWindow() const;
 
     const RenderingTracker *getRenderingTracker() const;
-
-    const ResourcesManager &getResourcesManager() const;
 
 private:
     static void
@@ -69,7 +64,6 @@ private:
 
     ApplicationConfig _config;
     RenderingTracker _tracker;
-    ResourcesManager _resourcesManager;
     std::list<std::unique_ptr<ARenderer>> _renderers;
     GLFWwindow *_window;
 

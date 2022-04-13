@@ -13,16 +13,16 @@ World::~World() {
 }
 
 void World::generate() {
-    unsigned short max_block = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
-    unsigned short number = CHUNK_WIDTH * CHUNK_WIDTH * 125;
-    unsigned short data[] = {
+    BlockTemplateID max_block = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
+    BlockTemplateID number = CHUNK_WIDTH * CHUNK_WIDTH * 125;
+    BlockTemplateID data[] = {
             number, 1,
-            static_cast<unsigned short>((max_block - number)), 0,
+            static_cast<BlockTemplateID>((max_block - number)), 0,
     };
     int radius = 2;
     for (int z = 0; z < radius; z++) {
         for (int x = 0; x < radius; x++) {
-            auto chunkData = Flat3DArray<unsigned short>::unzip(data, CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
+            auto chunkData = Flat3DArray<BlockTemplateID>::unzip(data, CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
             Chunk chunk = {
                     glm::vec3(x, 0, z),
                     chunkData,
@@ -42,7 +42,7 @@ void World::generate() {
         }
         for (int z = 0; z < radius; z++) {
             for (int x = 0; x < radius; x++) {
-                auto chunkData = Flat3DArray<unsigned short>::unzip(data, CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
+                auto chunkData = Flat3DArray<BlockTemplateID>::unzip(data, CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
                 Chunk chunk = {
                         glm::vec3(x, 0, z),
                         chunkData,

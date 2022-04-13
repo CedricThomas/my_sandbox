@@ -921,7 +921,7 @@ static void demo_prepare_textures(struct demo *demo) {
         if ((props.linearTilingFeatures &
              VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT) &&
             !demo->use_staging_buffer) {
-            /* Device can texture using linear textures */
+            /* Device can texture using linear texture */
             demo_prepare_texture_image(
                 demo, tex_colors[i], &demo->textures[i], VK_IMAGE_TILING_LINEAR,
                 VK_IMAGE_USAGE_SAMPLED_BIT,

@@ -20,11 +20,11 @@ set(SOURCE_FILES
         include/application/ARenderer.hpp
         src/application/renderer/Renderer.cpp
         include/application/renderer/Renderer.hpp
-        include/lib/utils/Provider.hpp
+        include/lib/Provider.hpp
         include/application/renderer/Shader.hpp
         src/application/renderer/Shader.cpp
-        src/lib/utils/ResourcesManager.cpp
-        include/lib/utils/ResourcesManager.hpp
+        src/lib/resources/ResourcesFinder.cpp
+        include/lib/resources/ResourcesFinder.hpp
         include/lib/stb_image.h
         include/lib/stb_image_write.h
         src/lib/stb_image.c
@@ -50,7 +50,7 @@ set(SOURCE_FILES
         include/application/renderer/containers/QuadBuffer.hpp
         include/lib/containers/TQueue.hpp
         src/application/renderer/Mesher.cpp
-        include/application/renderer/Mesher.hpp)
+        include/application/renderer/Mesher.hpp src/application/textures/TextureAtlas.cpp include/application/texture/TextureAtlas.hpp include/lib/resources/ResourceNotFound.hpp include/lib/resources/Resource.hpp src/world/blocks/BlockTemplate.cpp include/world/blocks/BlockTemplate.hpp include/bundling/DefaultBlockBundle.hpp include/lib/containers/PairHash.hpp src/bundling/Bundle.cpp include/bundling/Bundle.hpp src/bundling/BundleAtlas.cpp include/bundling/BundleAtlas.hpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(app ${SOURCE_FILES})

@@ -5,7 +5,6 @@
 #include "application/Application.hpp"
 #include "application/ApplicationException.hpp"
 #include "spdlog/spdlog.h"
-#include "lib/utils/ResourcesManager.hpp"
 
 Application &Application::getInstance() {
     static Application instance;
@@ -17,10 +16,8 @@ Application::Application() :
                         800,
                         600,
                         "Window",
-                        "resources",
                 }),
         _tracker(),
-        _resourcesManager("resources"),
         _renderers(),
         _window(nullptr){
 
@@ -186,10 +183,6 @@ void Application::init() {
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-    // reconfigure tools from config
-    // ---------------------------------------
-    _resourcesManager = ResourcesManager(_config.resourcesFolder);
-
     // custom init
     // ---------------------------------------
     for (auto &renderer: _renderers)
@@ -259,8 +252,4 @@ const RenderingTracker *Application::getRenderingTracker() const {
 
 GLFWwindow *Application::getWindow() const {
     return _window;
-}
-
-const ResourcesManager &Application::getResourcesManager() const {
-    return _resourcesManager;
 }

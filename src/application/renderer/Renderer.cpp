@@ -11,6 +11,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "application/renderer/containers/Vertex.hpp"
 #include "application/renderer/Mesher.hpp"
+#include "lib/resources/ResourcesFinder.hpp"
 
 Renderer::Renderer(std::shared_ptr<TQueue<WorldEvent>> queue) : ARenderer("Renderer"),
                                                                  _vao(0),
@@ -32,13 +33,12 @@ void Renderer::onInit(const Application &application) {
     // ------------------------------------
     _window = application.getWindow();
     _tracker = application.getRenderingTracker();
-    auto resourcesManager = application.getResourcesManager();
 
     // build and compile our shader program
     // ------------------------------------
     _shader = Shader(
-            resourcesManager.getResourcePath("shaders/voxel.vert"),
-            resourcesManager.getResourcePath("shaders/voxel.frag")
+            ResourcesFinder(SHADER).append("voxel.vert").get().path,
+            ResourcesFinder(SHADER).append("voxel.frag").get().path
     );
 
     // generate and bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
@@ -89,13 +89,13 @@ void Renderer::onInit(const Application &application) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+//    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char *data = stbi_load(resourcesManager.getResourcePath("textures/brick.png").c_str(), &width, &height,
+    unsigned char *data = stbi_load(ResourcesFinder(TEXTURE).append(BLOCK).append("stone_bricks.png").get().path.c_str(), &width, &height,
                                     &nrChannels,
                                     0);
     if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         spdlog::error("[{}] Error loading texture", this->getName());
@@ -106,8 +106,8 @@ void Renderer::onInit(const Application &application) {
     // -------------------------------------------------------------------------------------------
     _shader.useProgram(); // don't forget to activate/use the shader before setting uniforms!
     // TODO: implement dynamic texture atlas
-//    int textures[1] = {0};
-//    _shader.setInts("textures", 1, textures);
+//    int texture[1] = {0};
+//    _shader.setInts("texture", 1, texture);
     _shader.setInt("texture", 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
