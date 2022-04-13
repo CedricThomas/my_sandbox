@@ -48,7 +48,7 @@ static void start() {
 int main() {
     spdlog::set_level(spdlog::level::debug); // Set global log level to debug
     configure();
-//    start();
+    start();
     return 0;
 
 }

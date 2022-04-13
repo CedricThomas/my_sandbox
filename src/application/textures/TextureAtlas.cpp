@@ -82,6 +82,8 @@ void TextureAtlas::generateAtlas() {
                 _width / atlasSize * _width
         );
     }
+    _atlasWidth = atlasSize * _width;
+    _atlasHeight = atlasSize * _width;
 }
 
 const glm::vec4 TextureAtlas::getBlockTextureRegion(const BundleID &id, const std::string &textureName) const {
@@ -90,4 +92,12 @@ const glm::vec4 TextureAtlas::getBlockTextureRegion(const BundleID &id, const st
 
 unsigned char *TextureAtlas::getAtlas() const {
     return _data;
+}
+
+unsigned int TextureAtlas::getAtlasWidth() const {
+    return _atlasWidth;
+}
+
+unsigned int TextureAtlas::getAtlasHeight() const {
+    return _atlasHeight;
 }

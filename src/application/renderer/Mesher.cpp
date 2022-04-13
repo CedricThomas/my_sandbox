@@ -6,7 +6,7 @@
 
 Mesher::Mesher(QuadsMap &quadsMap) : _quadsMap(quadsMap), _chunkMap(), _meshMap(), _meshUpdates() {}
 
-QuadBuffer Mesher::generateQuadBuffer(const Mesh &mesh) {
+QuadBuffer Mesher::generateQuadBuffer(const Mesh &mesh, const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas) {
     QuadBuffer quads;
     for (int y = 0; y < CHUNK_HEIGHT; y++) {
         for (int x = 0; x < CHUNK_WIDTH; x++) {
@@ -163,7 +163,7 @@ void Mesher::removeChunk(const glm::vec3 &position) {
         _meshUpdates.insert(position + glm::vec3(0, 0, -1));
 }
 
-void Mesher::generateVertexes() {
+void Mesher::generateVertexes(const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas) {
     for (auto update: _meshUpdates) {
         auto mesh = _meshMap.find(update);
         // if the mesh is not found, remove it from the quads map and continue
@@ -171,7 +171,7 @@ void Mesher::generateVertexes() {
             _quadsMap.erase(update);
             continue;
         }
-        auto buffer = generateQuadBuffer(mesh->second);
+        auto buffer = generateQuadBuffer(mesh->second, bundleAtlas, textureAtlas);
         _quadsMap.emplace(update, buffer).first->second = buffer;
     }
     _meshUpdates.clear();

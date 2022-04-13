@@ -12,6 +12,8 @@
 #include "application/renderer/containers/Vertex.hpp"
 #include "application/renderer/Mesher.hpp"
 #include "lib/resources/ResourcesFinder.hpp"
+#include "application/texture/TextureAtlas.hpp"
+#include "bundling/BundleAtlas.hpp"
 
 Renderer::Renderer(std::shared_ptr<TQueue<WorldEvent>> queue) : ARenderer("Renderer"),
                                                                  _vao(0),
@@ -33,6 +35,9 @@ void Renderer::onInit(const Application &application) {
     // ------------------------------------
     _window = application.getWindow();
     _tracker = application.getRenderingTracker();
+    _textureAtlas = &TextureAtlas::getInstance();
+    _bundleAtlas = &BundleAtlas::getInstance();
+
 
     // build and compile our shader program
     // ------------------------------------
@@ -78,8 +83,8 @@ void Renderer::onInit(const Application &application) {
 
     // texture atlas
     // ---------
-    glGenTextures(1, &_textureAtlas);
-    glBindTexture(GL_TEXTURE_2D, _textureAtlas);
+    glGenTextures(1, &_textureAtlasTexture);
+    glBindTexture(GL_TEXTURE_2D, _textureAtlasTexture);
     // set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
                     GL_REPEAT);    // set texture wrapping to GL_REPEAT (default wrapping method)
@@ -87,20 +92,11 @@ void Renderer::onInit(const Application &application) {
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
-//    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-    // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char *data = stbi_load(ResourcesFinder(TEXTURES_FOLDER).append(BLOCKS_FOLDER).append("stone_bricks.png").get().path.c_str(), &width, &height,
-                                    &nrChannels,
-                                    0);
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
-        spdlog::error("[{}] Error loading texture", this->getName());
-    }
-    stbi_image_free(data);
+
+    // import texture atlas
+    // ------------------------
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _textureAtlas->getAtlasWidth(), _textureAtlas->getAtlasHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, _textureAtlas->getAtlas());
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
@@ -122,7 +118,7 @@ void Renderer::onRender(const Application &application) {
 
     // bind Texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _textureAtlas);
+    glBindTexture(GL_TEXTURE_2D, _textureAtlasTexture);
 
     // activate shader
     _shader.useProgram();
@@ -141,12 +137,12 @@ void Renderer::onRender(const Application &application) {
         if (std::holds_alternative<Chunk>(data.value())) {
             auto chunk = std::get<Chunk>(data.value());
             _mesher.insertChunk(chunk);
-            _mesher.generateVertexes();
+            _mesher.generateVertexes(*_bundleAtlas, *_textureAtlas);
         }
         if (std::holds_alternative<UnloadChunk>(data.value())) {
             auto chunk = std::get<UnloadChunk>(data.value());
             _mesher.removeChunk(chunk.position);
-            _mesher.generateVertexes();
+            _mesher.generateVertexes(*_bundleAtlas, *_textureAtlas);
         }
     }
 

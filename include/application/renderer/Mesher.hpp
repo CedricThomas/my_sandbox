@@ -10,6 +10,8 @@
 #include "application/renderer/containers/QuadBuffer.hpp"
 #include "world/World.hpp"
 #include "lib/containers/Flat3DArray.hpp"
+#include "bundling/BundleAtlas.hpp"
+#include "application/texture/TextureAtlas.hpp"
 
 using Mesh = Flat3DArray<unsigned char>;
 using MeshMap = std::unordered_map<glm::vec3, Mesh, std::hash<glm::vec3>>;
@@ -32,12 +34,12 @@ public:
     explicit Mesher(QuadsMap &quadsMap);
     void insertChunk(const Chunk &chunk);
     void removeChunk(const glm::vec3 &position);
-    void generateVertexes();
+    void generateVertexes(const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas);
 private:
     // mesh a single chunk and return it
     static Mesh meshChunk(const Chunk &chunk);
     // generate a single quad buffer and return it
-    static QuadBuffer generateQuadBuffer(const Mesh &mesh);
+    static QuadBuffer generateQuadBuffer(const Mesh &mesh, const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas);
 
     // generate a chunk side mesh from the mesh map
     // it returns true if an update is needed

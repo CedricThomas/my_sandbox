@@ -35,13 +35,20 @@ public:
 
     unsigned char *getAtlas() const;
 
+    unsigned int getAtlasWidth() const;
+
+    unsigned int getAtlasHeight() const;
+
     const glm::vec4 getBlockTextureRegion(const BundleID &id, const std::string &textureName) const;
 
+private:
     struct TextureRegion {
         Texture texture;
         glm::vec4 region;
     };
     unsigned char *_data;
+    unsigned int _atlasWidth;
+    unsigned int _atlasHeight;
     unsigned int _width;
     std::unordered_map<TextureBundledID, TextureRegion, TextureBundledIDHash> _texturesLocations;
 };

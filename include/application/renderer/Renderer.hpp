@@ -12,11 +12,13 @@
 #include "world/World.hpp"
 #include "application/renderer/containers/QuadBuffer.hpp"
 #include "Mesher.hpp"
+#include "bundling/BundleAtlas.hpp"
+#include "application/texture/TextureAtlas.hpp"
 
 #define MAX_VERTEXES_PER_DRAW (MAX_QUADS_PER_DRAW * 4)
 #define MAX_INDEXES_PER_DRAW (MAX_QUADS_PER_DRAW * 6)
 
-class Renderer: public ARenderer {
+class Renderer : public ARenderer {
 public:
     explicit Renderer(std::shared_ptr<TQueue<WorldEvent>> queue);
 
@@ -35,7 +37,7 @@ public:
     GLuint _vao;
     GLuint _vbo;
     GLuint _ebo;
-    GLuint _textureAtlas;
+    GLuint _textureAtlasTexture;
     Shader _shader;
     Camera _camera;
     QuadsMap _quadsMap;
@@ -45,6 +47,8 @@ public:
     // Application resources
     const RenderingTracker *_tracker;
     GLFWwindow *_window;
+    TextureAtlas *_textureAtlas;
+    BundleAtlas *_bundleAtlas;
 };
 
 
