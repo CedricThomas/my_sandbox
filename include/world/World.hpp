@@ -13,6 +13,7 @@
 #include "glm/gtx/hash.hpp"
 #include "glm/vec3.hpp"
 #include "world/blocks/BlockTemplate.hpp"
+#include "bundling/BundleAtlas.hpp"
 #include "bundling/Bundle.hpp"
 
 #define CHUNK_WIDTH 16
@@ -33,13 +34,14 @@ using WorldEvent = std::variant<LoadChunk, UnloadChunk>;
 
 class World {
 public:
-    World(std::shared_ptr<TQueue<WorldEvent>>);
+    World(std::shared_ptr<TQueue<WorldEvent>>, std::shared_ptr<BundleAtlas>);
 
     void generate();
     ~World();
 
 private:
     std::shared_ptr<TQueue<WorldEvent>> _queue;
+    std::shared_ptr<BundleAtlas> _bundleAtlas;
 };
 
 

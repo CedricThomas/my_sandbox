@@ -4,9 +4,18 @@
 
 #include "application/renderer/Mesher.hpp"
 
-Mesher::Mesher(QuadsMap &quadsMap) : _quadsMap(quadsMap), _chunkMap(), _meshMap(), _meshUpdates() {}
+Mesher::Mesher(
+        std::shared_ptr<BundleAtlas> bundleAtlas,
+        std::shared_ptr<TextureAtlas> textureAtlas,
+        QuadsMap &quadsMap
+) : _bundleAtlas(std::move(bundleAtlas)),
+    _textureAtlas(std::move(textureAtlas)),
+    _quadsMap(quadsMap),
+    _chunkMap(),
+    _meshMap(),
+    _meshUpdates() {}
 
-QuadBuffer Mesher::generateQuadBuffer(const Chunk &chunk, const Mesh &mesh, const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas) {
+QuadBuffer Mesher::generateQuadBuffer(const Chunk &chunk, const Mesh &mesh) {
     QuadBuffer quads;
     for (int y = 0; y < CHUNK_HEIGHT; y++) {
         for (int x = 0; x < CHUNK_WIDTH; x++) {
@@ -15,83 +24,245 @@ QuadBuffer Mesher::generateQuadBuffer(const Chunk &chunk, const Mesh &mesh, cons
                 if (block == 0)
                     continue;
                 auto blockID = chunk.data.get(x, y, z);
-                auto blockTemplate = bundleAtlas.getBlockTemplate(blockID);
+                auto map = _bundleAtlas->getBlockTemplate(blockID).textureMapping;
                 if (block & BACK_SIDE) {
-                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.back);
+                    auto region = _textureAtlas->getBlockTextureRegion(blockID.first, map.back);
                     quads.emplace_back(Quad(
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0], region[1] + region[3]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0] + region[2], region[1] + region[3]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0] + region[2],  region[1]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0],  region[1]), 0.0f)
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MIN
+                                    ),
+                                    glm::vec2(region.x, region.y + region.w),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MIN
+                                    ),
+                                    glm::vec2(region.x + region.z, region.y + region.w),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MIN
+                                    ),
+                                    glm::vec2(region.x + region.z, region.y),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MIN
+                                    ),
+                                    glm::vec2(region.x, region.y),
+                                    0.0f
+                            )
                     ));
                 }
                 if (block & FRONT_SIDE) {
-                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.front);
+                    auto region = _textureAtlas->getBlockTextureRegion(blockID.first, map.front);
                     quads.emplace_back(Quad(
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0], region[1] + region[3]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2], region[1] + region[3]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2],  region[1]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0],  region[1]), 0.0f)
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MAX
+                                    ),
+                                    glm::vec2(region.x, region.y + region.w),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MAX
+                                    ),
+                                    glm::vec2(region.x + region.z, region.y + region.w),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MAX
+                                    ),
+                                    glm::vec2(region.x + region.z, region.y),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MAX
+                                    ),
+                                    glm::vec2(region.x, region.y),
+                                    0.0f
+                            )
                     ));
                 }
                 if (block & LEFT_SIDE) {
-                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.left);
+                    auto region = _textureAtlas->getBlockTextureRegion(blockID.first, map.left);
                     quads.emplace_back(Quad(
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2],  region[1]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0],  region[1]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0],  region[1]+ region[2]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2],  region[1]+ region[2]), 0.0f)
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MAX
+                                    ),
+                                    glm::vec2(region.x + region.z, region.y),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MIN
+                                    ),
+                                    glm::vec2(region.x, region.y),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MIN
+                                    ),
+                                    glm::vec2(region.x, region.y + region.z),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MAX
+                                    ),
+                                    glm::vec2(region.x + region.z, region.y + region.z),
+                                    0.0f
+                            )
                     ));
                 }
                 if (block & RIGHT_SIDE) {
-                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.right);
+                    auto region = _textureAtlas->getBlockTextureRegion(blockID.first, map.right);
                     quads.emplace_back(Quad(
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2],  region[1]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0],  region[1]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0],  region[1] + region[3]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2],  region[1] + region[3]), 0.0f)
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MAX),
+                                    glm::vec2(region.x + region.z, region.y),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MIN
+                                    ),
+                                    glm::vec2(region.x, region.y),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MIN),
+                                    glm::vec2(region.x, region.y + region.w),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MAX),
+                                    glm::vec2(region.x + region.z, region.y + region.w),
+                                    0.0f
+                            )
                     ));
                 }
                 if (block & BOTTOM_SIDE) {
-                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.bottom);
+                    auto region = _textureAtlas->getBlockTextureRegion(blockID.first, map.bottom);
                     quads.emplace_back(Quad(
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0], region[1]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0] + region[2], region[1]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2], region[1] + region[3]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MIN,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0], region[1] + region[3]), region[1] + region[3])
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MIN
+                                    ),
+                                    glm::vec2(region.x, region.y),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MIN
+                                    ),
+                                    glm::vec2(region.x + region.z, region.y),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MAX
+                                    ),
+                                    glm::vec2(region.x + region.z, region.y + region.w),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MIN,
+                                            (z * VERTEX_GAP) + VERTEX_MAX
+                                    ),
+                                    glm::vec2(region.x, region.y + region.w),
+                                    0.0f
+                            )
                     ));
                 }
                 if (block & TOP_SIDE) {
-                    auto region = textureAtlas.getBlockTextureRegion(blockID.first, blockTemplate.textureMapping.top);
+                    auto region = _textureAtlas->getBlockTextureRegion(blockID.first, map.top);
                     quads.emplace_back(Quad(
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0], region[1]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MIN), glm::vec2(region[0] + region[2], region[1]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MAX, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0] + region[2], region[1] + region[3]), 0.0f),
-                            Vertex(glm::vec3((x * VERTEX_GAP) + VERTEX_MIN, (y * VERTEX_GAP) + VERTEX_MAX,
-                                             (z * VERTEX_GAP) + VERTEX_MAX), glm::vec2(region[0], region[1] + region[3]), 0.0f)
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MIN
+                                    ),
+                                    glm::vec2(region.x, region.y),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MIN),
+                                    glm::vec2(region.x + region.z, region.y),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MAX,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MAX),
+                                    glm::vec2(region.x + region.z, region.y + region.w),
+                                    0.0f
+                            ),
+                            Vertex(
+                                    glm::vec3(
+                                            (x * VERTEX_GAP) + VERTEX_MIN,
+                                            (y * VERTEX_GAP) + VERTEX_MAX,
+                                            (z * VERTEX_GAP) + VERTEX_MAX),
+                                    glm::vec2(region.x, region.y + region.w),
+                                    0.0f
+                            )
                     ));
                 }
             }
@@ -172,15 +343,16 @@ void Mesher::removeChunk(const glm::vec3 &position) {
         _meshUpdates.insert(position + glm::vec3(0, 0, -1));
 }
 
-void Mesher::generateVertexes(const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas) {
+void Mesher::generateVertexes() {
     for (auto update: _meshUpdates) {
-        auto mesh = _meshMap.find(update);
+        auto meshIt = _meshMap.find(update);
         // if the mesh is not found, remove it from the quads map and continue
-        if (mesh == _meshMap.end()) {
+        if (meshIt == _meshMap.end()) {
             _quadsMap.erase(update);
             continue;
         }
-        auto buffer = generateQuadBuffer(_chunkMap.at(update), mesh->second, bundleAtlas, textureAtlas);
+        auto &mesh = meshIt->second;
+        auto buffer = generateQuadBuffer(_chunkMap.at(update), mesh);
         _quadsMap.emplace(update, buffer).first->second = buffer;
     }
     _meshUpdates.clear();

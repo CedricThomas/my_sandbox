@@ -16,19 +16,10 @@
 using TextureBundledID = std::pair<BundleID, std::string>;
 using TextureBundledIDHash = PairHash<BundleID, std::string>;
 
-// TODO disable global atlas and load in application constructor
 class TextureAtlas {
 public:
-    static TextureAtlas &getInstance();
-
-    TextureAtlas(const TextureAtlas &) = delete;
-
-    void operator=(const TextureAtlas &) = delete;
-
-private:
     TextureAtlas() = default;
 
-public:
     void loadBundleBlockTextures(const Bundle &bundle);
 
     void generateAtlas();

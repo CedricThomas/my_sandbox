@@ -15,18 +15,23 @@
 #include "application/texture/TextureAtlas.hpp"
 #include "bundling/BundleAtlas.hpp"
 
-Renderer::Renderer(std::shared_ptr<TQueue<WorldEvent>> queue) : ARenderer("Renderer"),
-                                                                 _vao(0),
-                                                                 _vbo(0),
-                                                                 _ebo(0),
-                                                                 _textureAtlas(0),
-                                                                 _shader(),
-                                                                 _camera(glm::vec3(0.0f, 0.0f, 3.0f)),
-                                                                 _quadsMap(),
-                                                                _mesher(_quadsMap),
-                                                                 _queue(std::move(queue)),
-                                                                 _tracker(),
-                                                                 _window() {}
+Renderer::Renderer(
+        std::shared_ptr<TQueue<WorldEvent>> queue,
+        std::shared_ptr<BundleAtlas> bundleAtlas,
+       std::shared_ptr<TextureAtlas> textureAtlas
+) : ARenderer("Renderer"),
+     _vao(0),
+     _vbo(0),
+     _ebo(0),
+     _textureAtlas(0),
+     _shader(),
+     _camera(glm::vec3(0.0f, 0.0f, 3.0f)),
+     _quadsMap(),
+    _mesher(std::move(bundleAtlas), textureAtlas, _quadsMap),
+     _queue(std::move(queue)),
+     _tracker(),
+     _window(),
+     _atlas(textureAtlas) {}
 
 void Renderer::onInit(const Application &application) {
     ARenderer::onInit(application);
@@ -35,8 +40,6 @@ void Renderer::onInit(const Application &application) {
     // ------------------------------------
     _window = application.getWindow();
     _tracker = application.getRenderingTracker();
-    _textureAtlas = &TextureAtlas::getInstance();
-    _bundleAtlas = &BundleAtlas::getInstance();
 
 
     // build and compile our shader program
@@ -83,8 +86,8 @@ void Renderer::onInit(const Application &application) {
 
     // texture atlas
     // ---------
-    glGenTextures(1, &_textureAtlasTexture);
-    glBindTexture(GL_TEXTURE_2D, _textureAtlasTexture);
+    glGenTextures(1, &_textureAtlas);
+    glBindTexture(GL_TEXTURE_2D, _textureAtlas);
     // set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
                     GL_REPEAT);    // set texture wrapping to GL_REPEAT (default wrapping method)
@@ -95,15 +98,12 @@ void Renderer::onInit(const Application &application) {
 
     // import texture atlas
     // ------------------------
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _textureAtlas->getAtlasWidth(), _textureAtlas->getAtlasHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, _textureAtlas->getAtlas());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _atlas->getAtlasWidth(), _atlas->getAtlasHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, _atlas->getAtlas());
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
     _shader.useProgram(); // don't forget to activate/use the shader before setting uniforms!
-    // TODO: implement dynamic texture atlas
-//    int texture[1] = {0};
-//    _shader.setInts("texture", 1, texture);
     _shader.setInt("texture", 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -118,7 +118,7 @@ void Renderer::onRender(const Application &application) {
 
     // bind Texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _textureAtlasTexture);
+    glBindTexture(GL_TEXTURE_2D, _textureAtlas);
 
     // activate shader
     _shader.useProgram();
@@ -137,12 +137,12 @@ void Renderer::onRender(const Application &application) {
         if (std::holds_alternative<Chunk>(data.value())) {
             auto chunk = std::get<Chunk>(data.value());
             _mesher.insertChunk(chunk);
-            _mesher.generateVertexes(*_bundleAtlas, *_textureAtlas);
+            _mesher.generateVertexes();
         }
         if (std::holds_alternative<UnloadChunk>(data.value())) {
             auto chunk = std::get<UnloadChunk>(data.value());
             _mesher.removeChunk(chunk.position);
-            _mesher.generateVertexes(*_bundleAtlas, *_textureAtlas);
+            _mesher.generateVertexes();
         }
     }
 

@@ -31,15 +31,15 @@ using MeshMap = std::unordered_map<glm::vec3, Mesh, std::hash<glm::vec3>>;
 
 class Mesher {
 public:
-    explicit Mesher(QuadsMap &quadsMap);
+    explicit Mesher(std::shared_ptr<BundleAtlas> bundleAtlas, std::shared_ptr<TextureAtlas> textureAtlas, QuadsMap &quadsMap);
     void insertChunk(const Chunk &chunk);
     void removeChunk(const glm::vec3 &position);
-    void generateVertexes(const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas);
+    void generateVertexes();
 private:
     // mesh a single chunk and return it
-    static Mesh meshChunk(const Chunk &chunk);
+    Mesh meshChunk(const Chunk &chunk);
     // generate a single quad buffer and return it
-    static QuadBuffer generateQuadBuffer(const Chunk &chunk, const Mesh &mesh, const BundleAtlas &bundleAtlas, const TextureAtlas &textureAtlas);
+    QuadBuffer generateQuadBuffer(const Chunk &chunk, const Mesh &mesh);
 
     // generate a chunk side mesh from the mesh map
     // it returns true if an update is needed
@@ -48,6 +48,8 @@ private:
     // it returns true if an update is needed
     bool removeMeshCommonFaces(const glm::vec3 &position, int side);
 
+    std::shared_ptr<BundleAtlas> _bundleAtlas;
+    std::shared_ptr<TextureAtlas> _textureAtlas;
     QuadsMap &_quadsMap;
     ChunkMap _chunkMap;
     MeshMap _meshMap;

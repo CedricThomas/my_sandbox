@@ -7,8 +7,8 @@
 #include "world/World.hpp"
 #include "bundling/DefaultBlockBundle.hpp"
 
-World::World(std::shared_ptr<TQueue<WorldEvent>> queue): _queue(std::move(queue)) {
-}
+World::World(std::shared_ptr<TQueue<WorldEvent>> queue, std::shared_ptr<BundleAtlas> bundleAtlas) : _queue(
+        std::move(queue)), _bundleAtlas(std::move(bundleAtlas)) {}
 
 World::~World() {
 }

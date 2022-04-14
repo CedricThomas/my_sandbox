@@ -13,11 +13,8 @@ public:
     void registerBundle(const Bundle &bundle);
     const BlockTemplate &getBlockTemplate(BlockTemplateBundledID id) const;
 
-    static BundleAtlas &getInstance();
-    BundleAtlas(BundleAtlas const &) = delete;
-    void operator=(BundleAtlas const &) = delete;
-private:
     BundleAtlas() = default;
+private:
     std::unordered_map<BundleID, Bundle> _atlas;
 };
 

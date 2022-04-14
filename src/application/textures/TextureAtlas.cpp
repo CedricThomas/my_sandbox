@@ -9,11 +9,6 @@
 #include "lib/stb_image_write.h"
 #include "spdlog/spdlog.h"
 
-TextureAtlas &TextureAtlas::getInstance() {
-    static TextureAtlas instance;
-    return instance;
-}
-
 void TextureAtlas::loadBundleBlockTextures(const Bundle &bundle) {
     bool first = true;
     int width;

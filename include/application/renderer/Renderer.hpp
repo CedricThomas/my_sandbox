@@ -20,7 +20,11 @@
 
 class Renderer : public ARenderer {
 public:
-    explicit Renderer(std::shared_ptr<TQueue<WorldEvent>> queue);
+    explicit Renderer(
+            std::shared_ptr<TQueue<WorldEvent>> queue,
+            std::shared_ptr<BundleAtlas> bundleAtlas,
+            std::shared_ptr<TextureAtlas> textureAtlas
+    );
 
     void onInit(const Application &application) override;
 
@@ -37,18 +41,17 @@ public:
     GLuint _vao;
     GLuint _vbo;
     GLuint _ebo;
-    GLuint _textureAtlasTexture;
+    GLuint _textureAtlas;
     Shader _shader;
     Camera _camera;
     QuadsMap _quadsMap;
     Mesher _mesher;
     std::shared_ptr<TQueue<WorldEvent>> _queue;
+    std::shared_ptr<TextureAtlas> _atlas;
 
     // Application resources
     const RenderingTracker *_tracker;
     GLFWwindow *_window;
-    TextureAtlas *_textureAtlas;
-    BundleAtlas *_bundleAtlas;
 };
 
 
