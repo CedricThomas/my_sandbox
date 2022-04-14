@@ -31,7 +31,7 @@ Renderer::Renderer(
      _queue(std::move(queue)),
      _tracker(),
      _window(),
-     _atlas(textureAtlas) {}
+     _atlas(std::move(textureAtlas)) {}
 
 void Renderer::onInit(const Application &application) {
     ARenderer::onInit(application);
