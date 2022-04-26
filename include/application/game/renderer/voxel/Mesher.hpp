@@ -7,11 +7,11 @@
 
 #include <unordered_set>
 #include "glm/gtx/hash.hpp"
-#include "application/renderer/containers/QuadBuffer.hpp"
+#include "application/game/renderer/voxel/containers/QuadBuffer.hpp"
 #include "world/World.hpp"
 #include "lib/containers/Flat3DArray.hpp"
 #include "bundling/BundleAtlas.hpp"
-#include "application/texture/TextureAtlas.hpp"
+#include "application/game/texture/TextureAtlas.hpp"
 
 using Mesh = Flat3DArray<unsigned char>;
 using MeshMap = std::unordered_map<glm::vec3, Mesh, std::hash<glm::vec3>>;
@@ -31,10 +31,10 @@ using MeshMap = std::unordered_map<glm::vec3, Mesh, std::hash<glm::vec3>>;
 
 class Mesher {
 public:
-    explicit Mesher(std::shared_ptr<BundleAtlas> bundleAtlas, std::shared_ptr<TextureAtlas> textureAtlas, QuadsMap &quadsMap);
+    explicit Mesher(std::shared_ptr<BundleAtlas> bundleAtlas, std::shared_ptr<TextureAtlas> textureAtlas, std::shared_ptr<QuadsMap> quadsMap);
     void insertChunk(const Chunk &chunk);
     void removeChunk(const glm::vec3 &position);
-    void generateVertexes();
+    void meshUpdates();
 private:
     // mesh a single chunk and return it
     Mesh meshChunk(const Chunk &chunk);
@@ -50,7 +50,7 @@ private:
 
     std::shared_ptr<BundleAtlas> _bundleAtlas;
     std::shared_ptr<TextureAtlas> _textureAtlas;
-    QuadsMap &_quadsMap;
+    std::shared_ptr<QuadsMap> _quadsMap;
     ChunkMap _chunkMap;
     MeshMap _meshMap;
     std::unordered_set<glm::vec3, std::hash<glm::vec3>> _meshUpdates;

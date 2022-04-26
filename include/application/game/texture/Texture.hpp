@@ -9,7 +9,7 @@
 class Texture {
 public:
     Texture(unsigned char *data, int width, int height, int channels);
-
+    
     int getWidth() const;
 
     int getHeight() const;

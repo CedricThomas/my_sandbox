@@ -14,6 +14,7 @@
 #define TEXTURES_FOLDER "textures"
 #define BLOCKS_FOLDER "block"
 #define ENTITIES_FOLDER "entity"
+#define MISCS_FOLDER "misc"
 #define ITEMS_FOLDER "item"
 
 #define SHADERS_FOLDER "shaders"

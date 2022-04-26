@@ -3,7 +3,7 @@
 //
 
 #include <stdexcept>
-#include "application/texture/TextureAtlas.hpp"
+#include "application/game/texture/TextureAtlas.hpp"
 #include "lib/resources/ResourcesFinder.hpp"
 #include "lib/stb_image.h"
 #include "lib/stb_image_write.h"
