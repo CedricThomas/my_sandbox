@@ -4,6 +4,7 @@
 
 #include "application/game/Game.hpp"
 #include "application/game/renderer/voxel/VoxelRenderer.hpp"
+#include "application/game/renderer/skybox/SkyboxRenderer.hpp"
 
 Game::Game(
         const std::shared_ptr<Application> &application,
@@ -20,8 +21,8 @@ _mesher(bundleAtlas, textureAtlas, _quadsMap),
 _renderers() {}
 
 void Game::onInit() {
+    _renderers.emplace_back(std::make_unique<SkyboxRenderer>());
     _renderers.emplace_back(std::make_unique<VoxelRenderer>(_quadsMap, _textureAtlas));
-
 }
 
 void Game::onInput() {
