@@ -54,7 +54,8 @@ set(SOURCE_FILES
         src/application/game/textures/TextureAtlas.cpp
         include/application/game/texture/TextureAtlas.hpp
         include/lib/resources/ResourceNotFound.hpp
-        include/lib/resources/Resource.hpp src/world/blocks/BlockTemplate.cpp
+        include/lib/resources/Resource.hpp
+        src/world/blocks/BlockTemplate.cpp
         include/world/blocks/BlockTemplate.hpp
         include/bundling/DefaultBlockBundle.hpp
         include/lib/containers/PairHash.hpp
@@ -68,7 +69,8 @@ set(SOURCE_FILES
         include/application/game/renderer/skybox/SkyboxRenderer.hpp
         src/application/game/Game.cpp
         include/application/game/Game.hpp
-)
+        include/application/game/AGame.hpp
+        src/application/game/AGame.cpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(app ${SOURCE_FILES})

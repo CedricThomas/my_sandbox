@@ -3,22 +3,22 @@
 //
 #include <sstream>
 #include "application/Application.hpp"
+#include "application/game/AGame.hpp"
 #include "application/ApplicationException.hpp"
 #include "spdlog/spdlog.h"
 
-Application &Application::getInstance() {
-    static Application instance;
+std::shared_ptr<Application> Application::getInstance() {
+    static auto instance = std::shared_ptr<Application>(new Application());
     return instance;
 }
 
 Application::Application() :
         _config({
-                        800,
-                        600,
-                        "Window",
-                }),
-        _tracker(),
-        _renderers(),
+                800,
+                600,
+                "Window",
+        }),
+        _game(),
         _window(nullptr){
 
 }
@@ -29,27 +29,24 @@ void Application::framebuffer_size_callback(GLFWwindow *window, int width, int h
     spdlog::debug("[GLW callback] Resizing to {} x {}", width, height);
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
-    static auto &application = Application::getInstance();
-    application._config.width = width;
-    application._config.height = height;
+    static auto application = Application::getInstance();
+    application->_config.width = width;
+    application->_config.height = height;
     glViewport(0, 0, width, height);
 }
 
 // glfw: whenever the mouse is moved this callback function executes
 // ---------------------------------------------------------------------------------------------
 void Application::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-    static auto &application = Application::getInstance();
-    application._tracker.trackMousePosition(static_cast<float>(xpos), static_cast<float>(ypos));
-    for (auto &renderer: application._renderers)
-        renderer->onMouse(application, xpos, ypos);
+    static auto application = Application::getInstance();
+    application->_game->onMouseMove(static_cast<float>(xpos), static_cast<float>(ypos));
 }
 
 // glfw: whenever the mouse wheel is triggered this callback function executes
 // ---------------------------------------------------------------------------------------------
 void Application::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-    static auto &application = Application::getInstance();
-    for (auto &renderer: application._renderers)
-        renderer->onScroll(application, xoffset, yoffset);
+    static auto application = Application::getInstance();
+    application->_game->onScroll(xoffset, yoffset);
 }
 
 // glfw: whenever a debut log must be show this callback function executes
@@ -185,8 +182,7 @@ void Application::init() {
 
     // custom init
     // ---------------------------------------
-    for (auto &renderer: _renderers)
-        renderer->onInit(*this);
+    _game->onInit();
 }
 
 void Application::render() {
@@ -200,27 +196,23 @@ void Application::render() {
 
         // input
         // -----
-        for (auto &renderer: _renderers)
-            renderer->onInput(*this);
+        _game->onInput();
 
         // render
         // ------
-        for (auto &renderer: _renderers)
-            renderer->onRender(*this);
+        _game->onRender();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(_window);
         glfwPollEvents();
-        _tracker.trackFrameTime(static_cast<float>(glfwGetTime()));
     }
 }
 
 void Application::cleanup() {
     // custom cleanup
     // ------------------------------------------------------------------
-    for (auto rendererIt = _renderers.rbegin(); rendererIt != _renderers.rend(); rendererIt++)
-        (*rendererIt)->onCleanup(*this);
+    _game->onCleanup();
 
     // glfw: terminate, clearing all previously allocated GLFW resources
     // ------------------------------------------------------------------
@@ -237,19 +229,15 @@ void Application::configure(const Application::ApplicationConfig &config) {
     _config = config;
 }
 
-void Application::registerRenderer(std::unique_ptr<ARenderer> &&renderer) {
-    spdlog::debug("[{}] Registering", renderer->getName());
-    _renderers.push_back(std::move(renderer));
-}
-
 const Application::ApplicationConfig &Application::getConfig() const {
     return _config;
 }
 
-const RenderingTracker *Application::getRenderingTracker() const {
-    return &_tracker;
-}
 
 GLFWwindow *Application::getWindow() const {
     return _window;
+}
+
+void Application::registerGame(std::unique_ptr<AGame> &&game) {
+    _game = std::move(game);
 }

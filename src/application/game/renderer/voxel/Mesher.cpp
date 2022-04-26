@@ -7,10 +7,10 @@
 Mesher::Mesher(
         std::shared_ptr<BundleAtlas> bundleAtlas,
         std::shared_ptr<TextureAtlas> textureAtlas,
-        QuadsMap &quadsMap
+        std::shared_ptr<QuadsMap> quadsMap
 ) : _bundleAtlas(std::move(bundleAtlas)),
     _textureAtlas(std::move(textureAtlas)),
-    _quadsMap(quadsMap),
+    _quadsMap(std::move(quadsMap)),
     _chunkMap(),
     _meshMap(),
     _meshUpdates() {}
@@ -343,17 +343,17 @@ void Mesher::removeChunk(const glm::vec3 &position) {
         _meshUpdates.insert(position + glm::vec3(0, 0, -1));
 }
 
-void Mesher::generateVertexes() {
+void Mesher::meshUpdates() {
     for (auto update: _meshUpdates) {
         auto meshIt = _meshMap.find(update);
         // if the mesh is not found, remove it from the quads map and continue
         if (meshIt == _meshMap.end()) {
-            _quadsMap.erase(update);
+            _quadsMap->erase(update);
             continue;
         }
         auto &mesh = meshIt->second;
         auto buffer = generateQuadBuffer(_chunkMap.at(update), mesh);
-        _quadsMap.emplace(update, buffer).first->second = buffer;
+        _quadsMap->emplace(update, buffer).first->second = buffer;
     }
     _meshUpdates.clear();
 

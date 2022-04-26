@@ -10,21 +10,22 @@
 #include "application/game/renderer/ARenderer.hpp"
 #include "application/game/renderer/Shader.hpp"
 
-class SkyboxRenderer : public ARenderer {
-public:
-    SkyboxRenderer();
-
-    void onInit(const Application &application) override;
-
-    void onRender(const Application &application) override;
-
-    void onCleanup(const Application &application) override;
-
-private:
-    GLuint _vao;
-    GLuint _vbo;
-    GLuint _skyboxTexture;
-    Shader _shader;
+class SkyboxRenderer {
+//        : public ARenderer {
+//public:
+//    SkyboxRenderer();
+//
+//    void onInit(const Application &application) override;
+//
+//    void onRender(const Application &application) override;
+//
+//    void onCleanup(const Application &application) override;
+//
+//private:
+//    GLuint _vao;
+//    GLuint _vbo;
+//    GLuint _skyboxTexture;
+//    Shader _shader;
 };
 
 

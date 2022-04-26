@@ -2,46 +2,32 @@
 // Created by arzad on 17/01/2022.
 //
 
+#include <utility>
 #include "lib/glad.h"
 #include "GLFW/glfw3.h"
-#include <utility>
-#include "application/game/renderer/voxel/VoxelRenderer.hpp"
-#include "application/Application.hpp"
-#include "lib/stb_image.h"
 #include "glm/gtc/matrix_transform.hpp"
+#include "lib/stb_image.h"
+#include "application/Application.hpp"
+#include "application/game/renderer/voxel/VoxelRenderer.hpp"
+#include "application/game/renderer/voxel/VoxelRenderer.hpp"
 #include "application/game/renderer/voxel/containers/Vertex.hpp"
 #include "application/game/renderer/voxel/Mesher.hpp"
+#include "application/game/AGame.hpp"
 #include "lib/resources/ResourcesFinder.hpp"
 #include "application/game/texture/TextureAtlas.hpp"
 #include "bundling/BundleAtlas.hpp"
 
 VoxelRenderer::VoxelRenderer(
-        std::shared_ptr<TQueue<WorldEvent>> queue,
-        std::shared_ptr<BundleAtlas> bundleAtlas,
-       std::shared_ptr<TextureAtlas> textureAtlas
+        std::shared_ptr<QuadsMap> _quadsMap,
+        std::shared_ptr<TextureAtlas> textureAtlas
 ) : ARenderer("VoxelRenderer"),
-     _vao(0),
-     _vbo(0),
-     _ebo(0),
-     _textureAtlas(0),
-     _shader(),
-     _camera(glm::vec3(0.0f, 0.0f, 3.0f)),
-     _quadsMap(),
-    _mesher(std::move(bundleAtlas), textureAtlas, _quadsMap),
-     _queue(std::move(queue)),
-     _tracker(),
-     _window(),
-     _atlas(std::move(textureAtlas)) {}
-
-void VoxelRenderer::onInit(const Application &application) {
-    ARenderer::onInit(application);
-
-    // Save the usefull variables from the application
-    // ------------------------------------
-    _window = application.getWindow();
-    _tracker = application.getRenderingTracker();
-
-
+    _vao(0),
+    _vbo(0),
+    _ebo(0),
+    _textureAtlas(0),
+    _shader(),
+    _quadsMap(std::move(_quadsMap)),
+    _atlas(std::move(textureAtlas)) {
     // build and compile our shader program
     // ------------------------------------
     _shader = Shader(
@@ -98,7 +84,8 @@ void VoxelRenderer::onInit(const Application &application) {
 
     // import texture atlas
     // ------------------------
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _atlas->getAtlasWidth(), _atlas->getAtlasHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, _atlas->getAtlas());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _atlas->getAtlasWidth(), _atlas->getAtlasHeight(), 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, _atlas->getAtlas());
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
@@ -112,9 +99,8 @@ void VoxelRenderer::onInit(const Application &application) {
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-void VoxelRenderer::onRender(const Application &application) {
-    ARenderer::onRender(application);
-    auto config = application.getConfig();
+void VoxelRenderer::render(AGame &game) {
+    auto config = game.getConfig();
 
     // bind Texture
     glActiveTexture(GL_TEXTURE0);
@@ -130,27 +116,14 @@ void VoxelRenderer::onRender(const Application &application) {
     // pass transformation matrices to the shader
     _shader.setMat4("projection",
                     projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-    _shader.setMat4("view", _camera.getViewMatrix());
-
-    auto data = _queue->pop();
-    if (data.has_value()) {
-        if (std::holds_alternative<Chunk>(data.value())) {
-            auto chunk = std::get<Chunk>(data.value());
-            _mesher.insertChunk(chunk);
-            _mesher.generateVertexes();
-        }
-        if (std::holds_alternative<UnloadChunk>(data.value())) {
-            auto chunk = std::get<UnloadChunk>(data.value());
-            _mesher.removeChunk(chunk.position);
-            _mesher.generateVertexes();
-        }
-    }
+    _shader.setMat4("view", game.getCamera().getViewMatrix());
 
     glBindVertexArray(_vao);
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    for (auto &chunk : _quadsMap) {
+    for (auto &chunk: *_quadsMap) {
         auto position = chunk.first;
-        glBufferSubData(GL_ARRAY_BUFFER, 0, (ssize_t) _quadsMap[position].getSize(), _quadsMap[position].getVertices());
+        glBufferSubData(GL_ARRAY_BUFFER, 0, (ssize_t) (*_quadsMap)[position].getSize(),
+                        (*_quadsMap)[position].getVertices());
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(position.x * CHUNK_GAP, position.y, position.z * CHUNK_GAP));
@@ -162,37 +135,11 @@ void VoxelRenderer::onRender(const Application &application) {
     glBindVertexArray(0);
 }
 
-void VoxelRenderer::onCleanup(const Application &application) {
-    ARenderer::onCleanup(application);
+VoxelRenderer::~VoxelRenderer() {
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &_vao);
     glDeleteBuffers(1, &_vbo);
     glDeleteBuffers(1, &_ebo);
     _shader.deleteProgram();
-}
-
-void VoxelRenderer::onMouse(const Application &application, double xpos, double ypos) {
-    ARenderer::onMouse(application, xpos, ypos);
-    _camera.processMouseMovement(_tracker->getMouseXDelta(), _tracker->getMouseYDelta());
-}
-
-void VoxelRenderer::onScroll(const Application &application, double xoffset, double yoffset) {
-    ARenderer::onScroll(application, xoffset, yoffset);
-    _camera.processMouseScroll(static_cast<float>(yoffset));
-}
-
-void VoxelRenderer::onInput(const Application &application) {
-    ARenderer::onInput(application);
-    if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(_window, true);
-
-    if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-        _camera.processKeyboard(Camera::Movement::FORWARD, _tracker->getFrameDelta());
-    if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-        _camera.processKeyboard(Camera::Movement::BACKWARD, _tracker->getFrameDelta());
-    if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-        _camera.processKeyboard(Camera::Movement::LEFT, _tracker->getFrameDelta());
-    if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-        _camera.processKeyboard(Camera::Movement::RIGHT, _tracker->getFrameDelta());
 }
