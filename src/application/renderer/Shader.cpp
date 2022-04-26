@@ -2,7 +2,7 @@
 // Created by arzad on 22/01/2022.
 //
 
-#include "application/game/renderer/Shader.hpp"
+#include "application/renderer/Shader.hpp"
 
 // default constructor
 Shader::Shader() = default;

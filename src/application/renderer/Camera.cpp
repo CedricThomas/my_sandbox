@@ -1,7 +1,7 @@
 //
 // Created by arzad on 20/02/2022.
 //
-#include "application/game/Camera.hpp"
+#include "application/renderer/Camera.hpp"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : _front(glm::vec3(0.0f, 0.0f, -1.0f)), _movementSpeed(SPEED), _mouseSensitivity(SENSITIVITY), _zoom(ZOOM)
 {
@@ -12,7 +12,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : _fron
     updateCameraVectors();
 }
 
-glm::mat4 Camera::getViewMatrix() const {
+glm::mat4 Camera::getViewMatrix() {
     return glm::lookAt(_position, _position + _front, _up);
 }
 
@@ -75,12 +75,4 @@ void Camera::updateCameraVectors() {
     // also re-calculate the _right and _up vector
     _right = glm::normalize(glm::cross(_front, _worldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
     _up    = glm::normalize(glm::cross(_right, _front));
-}
-
-const glm::vec3 &Camera::getPosition() const {
-    return _position;
-}
-
-float Camera::getZoom() const {
-    return _zoom;
 }

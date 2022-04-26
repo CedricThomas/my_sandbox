@@ -2,7 +2,7 @@
 // Created by arzad on 13/04/2022.
 //
 
-#include "application/game/texture/Texture.hpp"
+#include "application/texture/Texture.hpp"
 
 Texture::Texture(unsigned char *data, int width, int height, int channels) : _data(nullptr), _width(width), _height(height),
                                                                     _channels(channels) {

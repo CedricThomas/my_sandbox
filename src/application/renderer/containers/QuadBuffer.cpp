@@ -4,7 +4,7 @@
 
 #include <cstring>
 #include <stdexcept>
-#include "application/game/renderer/voxel//containers/QuadBuffer.hpp"
+#include "application/renderer/containers/QuadBuffer.hpp"
 
 VertexArray QuadBuffer::getVertices() const {
     return reinterpret_cast<VertexArray>(_quads.data());

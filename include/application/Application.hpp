@@ -7,6 +7,8 @@
 
 #include "lib/glad.h"
 #include "GLFW/glfw3.h"
+#include "ARenderer.hpp"
+#include "application/renderer/RenderingTracker.hpp"
 
 #include <map>
 #include <string>
@@ -14,11 +16,10 @@
 #include <functional>
 #include <memory>
 
-class AGame;
 class Application {
 // singleton methods and type definition
 public:
-    static std::shared_ptr<Application> getInstance();
+    static Application &getInstance();
 
     Application(Application const &) = delete;
 
@@ -36,13 +37,15 @@ public:
 
     void configure(const ApplicationConfig &config);
 
-    void registerGame(std::unique_ptr<AGame> &&game);
+    void registerRenderer(std::unique_ptr<ARenderer> &&renderer);
 
     void start();
 
     const ApplicationConfig &getConfig() const;
 
     GLFWwindow *getWindow() const;
+
+    const RenderingTracker *getRenderingTracker() const;
 
 private:
     static void
@@ -60,7 +63,8 @@ private:
     void cleanup();
 
     ApplicationConfig _config;
-    std::unique_ptr<AGame> _game;
+    RenderingTracker _tracker;
+    std::list<std::unique_ptr<ARenderer>> _renderers;
     GLFWwindow *_window;
 
 };
