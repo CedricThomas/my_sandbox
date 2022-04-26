@@ -16,13 +16,13 @@ set(SOURCE_FILES
         include/application/Application.hpp
         src/application/ApplicationException.cpp
         include/application/ApplicationException.hpp
-        src/application/renderer/ARenderer.cpp
-        include/application/ARenderer.hpp
-        src/application/renderer/Renderer.cpp
-        include/application/renderer/Renderer.hpp
+        src/application/game/renderer/ARenderer.cpp
+        include/application/game/renderer/ARenderer.hpp
+        src/application/game/renderer/voxel/VoxelRenderer.cpp
+        include/application/game/renderer/voxel/VoxelRenderer.hpp
         include/lib/Provider.hpp
-        include/application/renderer/Shader.hpp
-        src/application/renderer/Shader.cpp
+        include/application/game/renderer/Shader.hpp
+        src/application/game/renderer/Shader.cpp
         src/lib/resources/ResourcesFinder.cpp
         include/lib/resources/ResourcesFinder.hpp
         include/lib/stb_image.h
@@ -30,27 +30,47 @@ set(SOURCE_FILES
         src/lib/stb_image.c
         include/lib/containers/Flat3DArray.hpp
         include/lib/containers/Flat2DArray.hpp
-        include/application/renderer/Camera.hpp
-        src/application/renderer/Camera.cpp
+        include/application/game/Camera.hpp
+        src/application/game/Camera.cpp
         include/lib/interfaces/Observer.hpp
         include/lib/interfaces/Observable.hpp
         src/server/Server.cpp
         include/server/Server.hpp
         src/world/World.cpp
         include/world/World.hpp
-        src/application/renderer/RenderingTracker.cpp
-        include/application/renderer/RenderingTracker.hpp
+        src/application/game/renderer/RenderingTracker.cpp
+        include/application/game/renderer/RenderingTracker.hpp
         src/lib/Pool.cpp
         include/lib/Pool.hpp
-        src/application/renderer/containers/Vertex.cpp
-        include/application/renderer/containers/Vertex.hpp
-        src/application/renderer/containers/Quad.cpp
-        include/application/renderer/containers/Quad.hpp
-        src/application/renderer/containers/QuadBuffer.cpp
-        include/application/renderer/containers/QuadBuffer.hpp
+        src/application/game/renderer/voxel/containers/Vertex.cpp
+        include/application/game/renderer/voxel/containers/Vertex.hpp
+        src/application/game/renderer/voxel/containers/Quad.cpp
+        include/application/game/renderer/voxel/containers/Quad.hpp
+        src/application/game/renderer/voxel/containers/QuadBuffer.cpp
+        include/application/game/renderer/voxel/containers/QuadBuffer.hpp
         include/lib/containers/TQueue.hpp
-        src/application/renderer/Mesher.cpp
-        include/application/renderer/Mesher.hpp src/application/textures/TextureAtlas.cpp include/application/texture/TextureAtlas.hpp include/lib/resources/ResourceNotFound.hpp include/lib/resources/Resource.hpp src/world/blocks/BlockTemplate.cpp include/world/blocks/BlockTemplate.hpp include/bundling/DefaultBlockBundle.hpp include/lib/containers/PairHash.hpp src/bundling/Bundle.cpp include/bundling/Bundle.hpp src/bundling/BundleAtlas.cpp include/bundling/BundleAtlas.hpp src/application/textures/Texture.cpp include/application/texture/Texture.hpp)
+        src/application/game/renderer/voxel/Mesher.cpp
+        include/application/game/renderer/voxel/Mesher.hpp
+        src/application/game/textures/TextureAtlas.cpp
+        include/application/game/texture/TextureAtlas.hpp
+        include/lib/resources/ResourceNotFound.hpp
+        include/lib/resources/Resource.hpp
+        src/world/blocks/BlockTemplate.cpp
+        include/world/blocks/BlockTemplate.hpp
+        include/bundling/DefaultBlockBundle.hpp
+        include/lib/containers/PairHash.hpp
+        src/bundling/Bundle.cpp
+        include/bundling/Bundle.hpp
+        src/bundling/BundleAtlas.cpp
+        include/bundling/BundleAtlas.hpp
+        src/application/game/textures/Texture.cpp
+        include/application/game/texture/Texture.hpp
+        src/application/game/renderer/skybox/SkyboxRenderer.cpp
+        include/application/game/renderer/skybox/SkyboxRenderer.hpp
+        src/application/game/Game.cpp
+        include/application/game/Game.hpp
+        include/application/game/AGame.hpp
+        src/application/game/AGame.cpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(app ${SOURCE_FILES})
