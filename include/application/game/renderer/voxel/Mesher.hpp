@@ -7,11 +7,11 @@
 
 #include <unordered_set>
 #include "glm/gtx/hash.hpp"
-#include "application/renderer/containers/QuadBuffer.hpp"
+#include "application/game/renderer/voxel/containers/QuadBuffer.hpp"
 #include "world/World.hpp"
 #include "lib/containers/Flat3DArray.hpp"
 #include "bundling/BundleAtlas.hpp"
-#include "application/texture/TextureAtlas.hpp"
+#include "application/game/texture/TextureAtlas.hpp"
 
 using Mesh = Flat3DArray<unsigned char>;
 using MeshMap = std::unordered_map<glm::vec3, Mesh, std::hash<glm::vec3>>;

@@ -3,23 +3,23 @@
 //
 
 #include "lib/glad.h"
-#include <GLFW/glfw3.h>
+#include "GLFW/glfw3.h"
 #include <utility>
-#include "application/renderer/Renderer.hpp"
+#include "application/game/renderer/voxel/VoxelRenderer.hpp"
 #include "application/Application.hpp"
 #include "lib/stb_image.h"
 #include "glm/gtc/matrix_transform.hpp"
-#include "application/renderer/containers/Vertex.hpp"
-#include "application/renderer/Mesher.hpp"
+#include "application/game/renderer/voxel/containers/Vertex.hpp"
+#include "application/game/renderer/voxel/Mesher.hpp"
 #include "lib/resources/ResourcesFinder.hpp"
-#include "application/texture/TextureAtlas.hpp"
+#include "application/game/texture/TextureAtlas.hpp"
 #include "bundling/BundleAtlas.hpp"
 
-Renderer::Renderer(
+VoxelRenderer::VoxelRenderer(
         std::shared_ptr<TQueue<WorldEvent>> queue,
         std::shared_ptr<BundleAtlas> bundleAtlas,
        std::shared_ptr<TextureAtlas> textureAtlas
-) : ARenderer("Renderer"),
+) : ARenderer("VoxelRenderer"),
      _vao(0),
      _vbo(0),
      _ebo(0),
@@ -33,7 +33,7 @@ Renderer::Renderer(
      _window(),
      _atlas(std::move(textureAtlas)) {}
 
-void Renderer::onInit(const Application &application) {
+void VoxelRenderer::onInit(const Application &application) {
     ARenderer::onInit(application);
 
     // Save the usefull variables from the application
@@ -45,8 +45,8 @@ void Renderer::onInit(const Application &application) {
     // build and compile our shader program
     // ------------------------------------
     _shader = Shader(
-            ResourcesFinder(SHADERS_FOLDER).append("voxel.vert").get().path,
-            ResourcesFinder(SHADERS_FOLDER).append("voxel.frag").get().path
+            ResourcesFinder(SHADERS_FOLDER).append("voxel/voxel.vert").get().path,
+            ResourcesFinder(SHADERS_FOLDER).append("voxel/voxel.frag").get().path
     );
 
     // generate and bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
@@ -112,7 +112,7 @@ void Renderer::onInit(const Application &application) {
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-void Renderer::onRender(const Application &application) {
+void VoxelRenderer::onRender(const Application &application) {
     ARenderer::onRender(application);
     auto config = application.getConfig();
 
@@ -162,7 +162,7 @@ void Renderer::onRender(const Application &application) {
     glBindVertexArray(0);
 }
 
-void Renderer::onCleanup(const Application &application) {
+void VoxelRenderer::onCleanup(const Application &application) {
     ARenderer::onCleanup(application);
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
@@ -172,17 +172,17 @@ void Renderer::onCleanup(const Application &application) {
     _shader.deleteProgram();
 }
 
-void Renderer::onMouse(const Application &application, double xpos, double ypos) {
+void VoxelRenderer::onMouse(const Application &application, double xpos, double ypos) {
     ARenderer::onMouse(application, xpos, ypos);
     _camera.processMouseMovement(_tracker->getMouseXDelta(), _tracker->getMouseYDelta());
 }
 
-void Renderer::onScroll(const Application &application, double xoffset, double yoffset) {
+void VoxelRenderer::onScroll(const Application &application, double xoffset, double yoffset) {
     ARenderer::onScroll(application, xoffset, yoffset);
     _camera.processMouseScroll(static_cast<float>(yoffset));
 }
 
-void Renderer::onInput(const Application &application) {
+void VoxelRenderer::onInput(const Application &application) {
     ARenderer::onInput(application);
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(_window, true);

@@ -2,7 +2,7 @@
 // Created by arzad on 23/03/2022.
 //
 
-#include "application/renderer/Mesher.hpp"
+#include "application/game/renderer/voxel/Mesher.hpp"
 
 Mesher::Mesher(
         std::shared_ptr<BundleAtlas> bundleAtlas,

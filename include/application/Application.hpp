@@ -7,8 +7,8 @@
 
 #include "lib/glad.h"
 #include "GLFW/glfw3.h"
-#include "ARenderer.hpp"
-#include "application/renderer/RenderingTracker.hpp"
+#include "application/game/renderer/ARenderer.hpp"
+#include "application/game/renderer/RenderingTracker.hpp"
 
 #include <map>
 #include <string>

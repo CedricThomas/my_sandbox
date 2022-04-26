@@ -2,7 +2,7 @@
 // Created by arzad on 16/01/2022.
 //
 
-#include "application/ARenderer.hpp"
+#include "application/game/renderer/ARenderer.hpp"
 #include "spdlog/spdlog.h"
 
 #include <utility>
