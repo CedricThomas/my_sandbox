@@ -13,6 +13,8 @@
 template<typename T>
 class Flat3DArray {
 public:
+    Flat3DArray() = default;
+
     Flat3DArray(std::vector<T> data, int x, int y, int z) : _x(x), _y(y), _z(z), _data(data) {}
 
     Flat3DArray(int x, int y, int z) : _x(x), _y(y), _z(z) {

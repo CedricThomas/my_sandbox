@@ -8,7 +8,7 @@
 
 Game::Game(
         const std::shared_ptr<Application> &application,
-        const std::shared_ptr<TQueue<WorldEvent>> &worldEventQueue,
+        std::shared_ptr<moodycamel::ConcurrentQueue<WorldEvent>> worldEventQueue,
         const std::shared_ptr<BundleAtlas> &bundleAtlas,
         const std::shared_ptr<TextureAtlas> &textureAtlas
 ) :
@@ -43,15 +43,16 @@ void Game::onInput() {
 void Game::onRender() {
     AGame::onRender();
     // input from queue
-    auto data = _eventQueue->pop();
-    if (data.has_value()) {
-        if (std::holds_alternative<Chunk>(data.value())) {
-            auto chunk = std::get<Chunk>(data.value());
+    WorldEvent event;
+    auto hasData = _eventQueue->try_dequeue(event);
+    if (hasData) {
+        if (std::holds_alternative<Chunk>(event)) {
+            auto chunk = std::get<Chunk>(event);
             _mesher.insertChunk(chunk);
             _mesher.meshUpdates();
         }
-        if (std::holds_alternative<UnloadChunk>(data.value())) {
-            auto chunk = std::get<UnloadChunk>(data.value());
+        if (std::holds_alternative<UnloadChunk>(event)) {
+            auto chunk = std::get<UnloadChunk>(event);
             _mesher.removeChunk(chunk.position);
             _mesher.meshUpdates();
         }

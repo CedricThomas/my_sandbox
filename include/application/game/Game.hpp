@@ -19,7 +19,7 @@ public:
 
     Game(
             const std::shared_ptr<Application> &application,
-            const std::shared_ptr<TQueue<WorldEvent>> &worldEventQueue,
+            std::shared_ptr<moodycamel::ConcurrentQueue<WorldEvent>> worldEventQueue,
             const std::shared_ptr<BundleAtlas> &bundleAtlas,
             const std::shared_ptr<TextureAtlas> &textureAtlas
     );
@@ -43,7 +43,7 @@ private:
 
     // world structure
     std::shared_ptr<QuadsMap> _quadsMap;
-    std::shared_ptr<TQueue<WorldEvent>> _eventQueue;
+    std::shared_ptr<moodycamel::ConcurrentQueue<WorldEvent>> _eventQueue;
     Mesher _mesher;
 
     // rendering

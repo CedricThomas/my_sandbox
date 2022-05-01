@@ -1,9 +1,8 @@
 #include "spdlog/spdlog.h"
 #include "application/Application.hpp"
-#include "application/game/renderer/voxel/VoxelRenderer.hpp"
 #include "world/World.hpp"
 #include "lib/Pool.hpp"
-#include "lib/containers/TQueue.hpp"
+#include "lib/containers/concurrentqueue.h"
 #include "lib/resources/ResourcesFinder.hpp"
 #include "bundling/DefaultBlockBundle.hpp"
 #include "bundling/BundleAtlas.hpp"
@@ -31,7 +30,7 @@ static void configure(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr
 
 static void start(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr<TextureAtlas> &textureAtlas) {
     auto application = Application::getInstance();
-    auto queue = std::make_shared<TQueue<WorldEvent>>();
+    auto queue = std::make_shared<moodycamel::ConcurrentQueue<WorldEvent>>();
     Pool pool(1, 2);
 
     application->registerGame(std::make_unique<Game>(application, queue, bundleAtlas, textureAtlas));

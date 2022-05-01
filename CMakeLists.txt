@@ -48,7 +48,8 @@ set(SOURCE_FILES
         include/application/game/renderer/voxel/containers/Quad.hpp
         src/application/game/renderer/voxel/containers/QuadBuffer.cpp
         include/application/game/renderer/voxel/containers/QuadBuffer.hpp
-        include/lib/containers/TQueue.hpp
+        include/lib/containers/concurrentqueue.h
+        include/lib/enet.h
         src/application/game/renderer/voxel/Mesher.cpp
         include/application/game/renderer/voxel/Mesher.hpp
         src/application/game/textures/TextureAtlas.cpp

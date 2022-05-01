@@ -7,7 +7,7 @@
 #include "world/World.hpp"
 #include "bundling/DefaultBlockBundle.hpp"
 
-World::World(std::shared_ptr<TQueue<WorldEvent>> queue, std::shared_ptr<BundleAtlas> bundleAtlas) : _queue(
+World::World(std::shared_ptr<moodycamel::ConcurrentQueue<WorldEvent>> queue, std::shared_ptr<BundleAtlas> bundleAtlas) : _queue(
         std::move(queue)), _bundleAtlas(std::move(bundleAtlas)) {}
 
 World::~World() {
@@ -35,7 +35,7 @@ void World::generate() {
                     glm::vec3(x, 0, z),
                     chunkData,
             };
-            _queue->push(chunk);
+            _queue->enqueue(chunk);
         }
     }
 }

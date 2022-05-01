@@ -9,7 +9,7 @@
 #include <variant>
 #include "lib/interfaces/Observer.hpp"
 #include "lib/containers/Flat3DArray.hpp"
-#include "lib/containers/TQueue.hpp"
+#include "lib/containers/concurrentqueue.h"
 #include "glm/gtx/hash.hpp"
 #include "glm/vec3.hpp"
 #include "world/blocks/BlockTemplate.hpp"
@@ -34,13 +34,13 @@ using WorldEvent = std::variant<LoadChunk, UnloadChunk>;
 
 class World {
 public:
-    World(std::shared_ptr<TQueue<WorldEvent>>, std::shared_ptr<BundleAtlas>);
+    World(std::shared_ptr<moodycamel::ConcurrentQueue<WorldEvent>>, std::shared_ptr<BundleAtlas>);
 
     void generate();
     ~World();
 
 private:
-    std::shared_ptr<TQueue<WorldEvent>> _queue;
+    std::shared_ptr<moodycamel::ConcurrentQueue<WorldEvent>> _queue;
     std::shared_ptr<BundleAtlas> _bundleAtlas;
 };
 
