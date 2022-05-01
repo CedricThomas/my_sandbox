@@ -9,11 +9,11 @@
 #include "application/game/Game.hpp"
 #include "lib/broker/MessageBroker.hpp"
 #include "application/game/Events.hpp"
+#include "lib/config.hpp"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-const char *RESOURCES_FOLDER = "../resources";
 
 static void configure(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr<TextureAtlas> &textureAtlas) {
     auto application = Application::getInstance();
@@ -62,18 +62,4 @@ int main() {
     configure(bundleAtlas, textureAtlas);
     start(bundleAtlas, textureAtlas);
     return 0;
-
 }
-
-//int main(int argc, char *argv[]) {
-//    Server server;
-//    if (argc != 2) {
-//        std::cout << "Usage: " << argv[0] << " <mode>" << std::endl;
-//        return 1;
-//    }
-//    if (std::strcmp(argv[1], "server") == 0) {
-//        server.server();
-//    } else if (std::strcmp(argv[1], "client") == 0) {
-//        server.client();
-//    }
-//}
