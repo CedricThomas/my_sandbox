@@ -5,7 +5,7 @@
 #ifndef APP_SHADER_HPP
 #define APP_SHADER_HPP
 
-#include "lib/glad.h"
+#include "lib/graphics/glad.h"
 #include "application/ApplicationException.hpp"
 
 #include "glm/glm.hpp"

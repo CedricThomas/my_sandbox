@@ -5,7 +5,7 @@
 #ifndef APP_CAMERA_HPP
 #define APP_CAMERA_HPP
 
-#include "lib/glad.h"
+#include "lib/graphics/glad.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 

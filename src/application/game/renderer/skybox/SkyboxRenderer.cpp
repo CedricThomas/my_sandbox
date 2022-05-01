@@ -7,7 +7,7 @@
 #include "application/game/renderer/skybox/SkyboxRenderer.hpp"
 #include "application/game/AGame.hpp"
 #include "lib/resources/ResourcesFinder.hpp"
-#include "lib/stb_image.h"
+#include "lib/graphics/stb_image.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "spdlog/spdlog.h"
 

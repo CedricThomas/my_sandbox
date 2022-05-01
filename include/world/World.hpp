@@ -6,38 +6,23 @@
 #define APP_WORLD_HPP
 
 #include <memory>
-#include <variant>
-#include "lib/containers/Flat3DArray.hpp"
-#include "lib/containers/concurrentqueue.h"
-#include "glm/vec3.hpp"
-#include "bundling/Bundle.hpp"
+#include "lib/broker/Topic.hpp"
+#include "Events.hpp"
+#include "application/game/Events.hpp"
 #include "bundling/BundleAtlas.hpp"
 
 #define CHUNK_WIDTH 16
 #define CHUNK_HEIGHT 255
 
-struct Chunk {
-    glm::vec3 position;
-    Flat3DArray<BlockTemplateBundledID> data;
-};
-
-using LoadChunk = Chunk;
-struct UnloadChunk {
-    glm::vec3 position;
-};
-using ChunkMap = std::unordered_map<glm::vec3, Chunk, std::hash<glm::vec3>>;
-
-using WorldEvent = std::variant<LoadChunk, UnloadChunk>;
-
 class World {
 public:
-    World(std::shared_ptr<moodycamel::ConcurrentQueue<WorldEvent>>, std::shared_ptr<BundleAtlas>);
+    World(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldEventTopic, std::shared_ptr<BundleAtlas>);
 
     void generate();
     ~World();
 
 private:
-    std::shared_ptr<moodycamel::ConcurrentQueue<WorldEvent>> _queue;
+    std::shared_ptr<Topic<WorldEvent, GameEvent>> _worldEventTopic;
     std::shared_ptr<BundleAtlas> _bundleAtlas;
 };
 

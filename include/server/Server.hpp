@@ -5,11 +5,11 @@
 #ifndef APP_SERVER_HPP
 #define APP_SERVER_HPP
 
-#include "lib/interfaces/Observable.hpp"
-
-class Server: public Observable<int>, public Observable<float> {
+class Server {
 public:
-    void start();
+    static void init();
+    void client();
+    void server();
 };
 
 

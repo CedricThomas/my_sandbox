@@ -5,7 +5,7 @@
 #ifndef APP_APPLICATION_HPP
 #define APP_APPLICATION_HPP
 
-#include "lib/glad.h"
+#include "lib/graphics/glad.h"
 #include "GLFW/glfw3.h"
 
 #include <map>

@@ -6,7 +6,7 @@
 #define APP_SKYBOXRENDERER_HPP
 
 
-#include "lib/glad.h"
+#include "lib/graphics/glad.h"
 #include "application/game/renderer/ARenderer.hpp"
 #include "application/game/renderer/Shader.hpp"
 

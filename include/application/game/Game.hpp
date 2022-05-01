@@ -13,13 +13,16 @@
 #include "Camera.hpp"
 #include "application/game/renderer/voxel/Mesher.hpp"
 #include "AGame.hpp"
+#include "lib/broker/Subscription.hpp"
+#include "Events.hpp"
+#include "world/Events.hpp"
 
 class Game : public AGame {
 public:
 
     Game(
             const std::shared_ptr<Application> &application,
-            std::shared_ptr<moodycamel::ConcurrentQueue<WorldEvent>> worldEventQueue,
+            std::shared_ptr<Subscription<WorldEvent, GameEvent>> worldEventQueue,
             const std::shared_ptr<BundleAtlas> &bundleAtlas,
             const std::shared_ptr<TextureAtlas> &textureAtlas
     );
@@ -43,7 +46,7 @@ private:
 
     // world structure
     std::shared_ptr<QuadsMap> _quadsMap;
-    std::shared_ptr<moodycamel::ConcurrentQueue<WorldEvent>> _eventQueue;
+    std::shared_ptr<Subscription<WorldEvent, GameEvent>> _worldEventSubscription;
     Mesher _mesher;
 
     // rendering

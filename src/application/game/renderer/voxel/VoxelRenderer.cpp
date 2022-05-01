@@ -3,10 +3,10 @@
 //
 
 #include <utility>
-#include "lib/glad.h"
+#include "lib/graphics/glad.h"
 #include "GLFW/glfw3.h"
 #include "glm/gtc/matrix_transform.hpp"
-#include "lib/stb_image.h"
+#include "lib/graphics/stb_image.h"
 #include "application/Application.hpp"
 #include "application/game/renderer/voxel/VoxelRenderer.hpp"
 #include "application/game/renderer/voxel/VoxelRenderer.hpp"

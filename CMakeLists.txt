@@ -6,11 +6,13 @@ include_directories(
         ${PROJECT_SOURCE_DIR}/include
 )
 
+# set(APPLICATION_SOURCES)
+
 # Add main.cpp file of project root directory as source file
 set(SOURCE_FILES
-        include/lib/khrplatform.h
-        include/lib/glad.h
-        src/lib/glad.c
+        include/lib/graphics/khrplatform.h
+        include/lib/graphics/glad.h
+        src/lib/graphics/glad.c
         src/main.cpp
         src/application/Application.cpp
         include/application/Application.hpp
@@ -20,14 +22,13 @@ set(SOURCE_FILES
         include/application/game/renderer/ARenderer.hpp
         src/application/game/renderer/voxel/VoxelRenderer.cpp
         include/application/game/renderer/voxel/VoxelRenderer.hpp
-        include/lib/Provider.hpp
         include/application/game/renderer/Shader.hpp
         src/application/game/renderer/Shader.cpp
         src/lib/resources/ResourcesFinder.cpp
         include/lib/resources/ResourcesFinder.hpp
-        include/lib/stb_image.h
-        include/lib/stb_image_write.h
-        src/lib/stb_image.c
+        include/lib/graphics/stb_image.h
+        include/lib/graphics/stb_image_write.h
+        src/lib/graphics/stb_image.c
         include/lib/containers/Flat3DArray.hpp
         include/application/game/Camera.hpp
         src/application/game/Camera.cpp
@@ -68,7 +69,14 @@ set(SOURCE_FILES
         src/application/game/Game.cpp
         include/application/game/Game.hpp
         include/application/game/AGame.hpp
-        src/application/game/AGame.cpp)
+        src/application/game/AGame.cpp
+        src/server/Client.cpp
+        include/server/Client.hpp
+        include/lib/broker/MessageBroker.hpp
+        include/lib/broker/Topic.hpp
+        include/lib/broker/Subscription.hpp
+        include/world/Events.hpp
+        include/application/game/Events.hpp)
 
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(app ${SOURCE_FILES})

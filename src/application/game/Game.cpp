@@ -8,7 +8,7 @@
 
 Game::Game(
         const std::shared_ptr<Application> &application,
-        std::shared_ptr<moodycamel::ConcurrentQueue<WorldEvent>> worldEventQueue,
+        std::shared_ptr<Subscription<WorldEvent, GameEvent>> worldEventSubscription,
         const std::shared_ptr<BundleAtlas> &bundleAtlas,
         const std::shared_ptr<TextureAtlas> &textureAtlas
 ) :
@@ -16,7 +16,7 @@ AGame(application),
 _quadsMap(new QuadsMap()),
 _textureAtlas(textureAtlas),
 _bundleAtlas(bundleAtlas),
-_eventQueue(worldEventQueue),
+_worldEventSubscription(worldEventSubscription),
 _mesher(bundleAtlas, textureAtlas, _quadsMap),
 _renderers() {}
 
@@ -42,9 +42,9 @@ void Game::onInput() {
 
 void Game::onRender() {
     AGame::onRender();
-    // input from queue
+
     WorldEvent event;
-    auto hasData = _eventQueue->try_dequeue(event);
+    auto hasData = (*_worldEventSubscription)->try_dequeue(event);
     if (hasData) {
         if (std::holds_alternative<Chunk>(event)) {
             auto chunk = std::get<Chunk>(event);

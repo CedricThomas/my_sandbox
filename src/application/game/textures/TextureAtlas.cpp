@@ -5,8 +5,8 @@
 #include <stdexcept>
 #include "application/game/texture/TextureAtlas.hpp"
 #include "lib/resources/ResourcesFinder.hpp"
-#include "lib/stb_image.h"
-#include "lib/stb_image_write.h"
+#include "lib/graphics/stb_image.h"
+#include "lib/graphics/stb_image_write.h"
 #include "spdlog/spdlog.h"
 
 void TextureAtlas::loadBundleBlockTextures(const Bundle &bundle) {
