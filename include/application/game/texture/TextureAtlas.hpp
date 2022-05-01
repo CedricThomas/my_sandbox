@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 #include "lib/resources/Resource.hpp"
+#include "lib/containers/PairHash.hpp"
 #include "glm/vec4.hpp"
 #include "world/blocks/BlockTemplate.hpp"
 #include "bundling/Bundle.hpp"

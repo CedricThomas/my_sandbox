@@ -7,6 +7,7 @@
 
 
 #include <string>
+#include <unordered_map>
 #include "world/blocks/BlockTemplate.hpp"
 
 using BundleID = unsigned short;

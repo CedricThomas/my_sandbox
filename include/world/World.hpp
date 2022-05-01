@@ -7,14 +7,11 @@
 
 #include <memory>
 #include <variant>
-#include "lib/interfaces/Observer.hpp"
 #include "lib/containers/Flat3DArray.hpp"
 #include "lib/containers/concurrentqueue.h"
-#include "glm/gtx/hash.hpp"
 #include "glm/vec3.hpp"
-#include "world/blocks/BlockTemplate.hpp"
-#include "bundling/BundleAtlas.hpp"
 #include "bundling/Bundle.hpp"
+#include "bundling/BundleAtlas.hpp"
 
 #define CHUNK_WIDTH 16
 #define CHUNK_HEIGHT 255

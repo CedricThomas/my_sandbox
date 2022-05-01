@@ -29,11 +29,8 @@ set(SOURCE_FILES
         include/lib/stb_image_write.h
         src/lib/stb_image.c
         include/lib/containers/Flat3DArray.hpp
-        include/lib/containers/Flat2DArray.hpp
         include/application/game/Camera.hpp
         src/application/game/Camera.cpp
-        include/lib/interfaces/Observer.hpp
-        include/lib/interfaces/Observable.hpp
         src/server/Server.cpp
         include/server/Server.hpp
         src/world/World.cpp

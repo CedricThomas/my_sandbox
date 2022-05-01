@@ -7,7 +7,6 @@
 
 #include <string>
 #include <vector>
-#include "lib/containers/PairHash.hpp"
 
 using BlockTemplateID = unsigned short;
 
