@@ -91,6 +91,9 @@ set(GRAPHIC_LIB_SRC
 )
 
 set(SERVER_SRC
+        src/server/Enet.cpp
+        include/server/Enet.hpp
+
         src/server/Server.cpp
         include/server/Server.hpp
 
@@ -112,7 +115,9 @@ set(COMMON_LIB_SRC
 
         include/lib/broker/MessageBroker.hpp
         include/lib/broker/Topic.hpp
-        include/lib/broker/Subscription.hpp
+        include/lib/broker/AsyncSubscription.hpp
+        include/lib/broker/SyncSubscription.hpp
+        include/lib/broker/ASubscription.hpp
 
         src/lib/resources/ResourcesFinder.cpp
         include/lib/resources/ResourcesFinder.hpp
@@ -129,7 +134,7 @@ set(APPLICATION_SRC
         ${SERVER_SRC}
         ${COMMON_LIB_SRC}
         src/app.cpp
-)
+        include/lib/broker/ASubscription.hpp)
 
 set(SERVER_SRC
         ${PROTOCOL_SRC}

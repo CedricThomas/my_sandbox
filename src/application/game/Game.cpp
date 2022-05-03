@@ -8,7 +8,7 @@
 
 Game::Game(
         const std::shared_ptr<Application> &application,
-        std::shared_ptr<Subscription<WorldEvent, GameEvent>> worldEventSubscription,
+        std::shared_ptr<ASubscription<WorldEvent, GameEvent>> worldEventSubscription,
         const std::shared_ptr<BundleAtlas> &bundleAtlas,
         const std::shared_ptr<TextureAtlas> &textureAtlas
 ) :
@@ -44,7 +44,7 @@ void Game::onRender() {
     AGame::onRender();
 
     WorldEvent event;
-    auto hasData = (*_worldEventSubscription)->try_dequeue(event);
+    auto hasData = _worldEventSubscription->tryPull(event);
     if (hasData) {
         if (std::holds_alternative<Chunk>(event)) {
             auto chunk = std::get<Chunk>(event);

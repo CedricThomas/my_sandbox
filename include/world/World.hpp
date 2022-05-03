@@ -19,6 +19,9 @@ public:
     World(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldEventTopic, std::shared_ptr<BundleAtlas>);
 
     void generate();
+
+    void start();
+
     ~World();
 
 private:

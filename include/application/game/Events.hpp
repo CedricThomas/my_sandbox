@@ -7,8 +7,8 @@
 
 #include <variant>
 
-#define LOCAL_GAME_EVENT_TOPIC "local-game-topic"
-#define REMOTE_GAME_EVENT_TOPIC "remote-game-topic"
+#define LOCAL_GAME_EVENT_SUBSCRIPTION "local-game-subscription"
+#define REMOTE_GAME_EVENT_SUBSCRIPTION "remote-game-subscription"
 
 using GameEvent = std::variant<int, float>;
 

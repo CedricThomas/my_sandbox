@@ -1,3 +1,4 @@
+#include "server/Enet.hpp"
 #include "spdlog/spdlog.h"
 #include "application/Application.hpp"
 #include "world/World.hpp"
@@ -10,6 +11,7 @@
 #include "lib/broker/MessageBroker.hpp"
 #include "application/game/Events.hpp"
 #include "lib/config.hpp"
+#include "server/Client.hpp"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -27,29 +29,35 @@ static void configure(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr
                                    SCR_HEIGHT,
                                    "Application",
                            });
+    ENET::init();
 }
 
 static void start(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr<TextureAtlas> &textureAtlas) {
     auto application = Application::getInstance();
     MessageBroker<WorldEvent, GameEvent> broker;
     auto topic = broker.createTopic(WORLD_EVENT_TOPIC);
-    Pool pool(1, 2);
+        Pool pool(1, 2);
 
     application->registerGame(
             std::make_unique<Game>(
                     application,
-                    broker.subscribeToTopic(
+                    broker.createAsyncSubscription(
                             WORLD_EVENT_TOPIC,
-                            LOCAL_GAME_EVENT_TOPIC
+                            LOCAL_GAME_EVENT_SUBSCRIPTION
                     ),
                     bundleAtlas,
                     textureAtlas
             )
     );
     pool.addJob([&]() {
-        World world(topic, bundleAtlas);
-        world.generate();
+        Client client(topic, "127.0.0.1", 7777);
+        client.start();
     });
+
+//    pool.addJob([&]() {
+//        World world(topic, bundleAtlas);
+//        world.generate();
+//    });
     application->start();
     pool.shutdown();
 }

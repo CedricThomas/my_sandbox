@@ -18,9 +18,14 @@ public:
         return topic;
     }
 
-    std::shared_ptr<Subscription<T, U>> subscribeToTopic(const std::string &topicName, const std::string &subscriptionName) {
-        return _topics[topicName]->subscribeAs(subscriptionName);
+    std::shared_ptr<ASubscription<T, U>> createAsyncSubscription(const std::string &topicName, const std::string &subscriptionName) {
+        return _topics[topicName]->createAsyncSubscribe(subscriptionName);
     }
+
+    std::shared_ptr<ASubscription<T, U>> createSyncSubscription(const std::string &topicName, const std::string &subscriptionName, const SyncSubscriptionCallback<U> &callback) {
+        return _topics[topicName]->createSyncSubscribe(subscriptionName, callback);
+    }
+
 private:
     std::unordered_map<std::string, std::shared_ptr<Topic<T, U>>> _topics;
 };

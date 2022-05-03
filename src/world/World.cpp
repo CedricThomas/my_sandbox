@@ -34,7 +34,14 @@ void World::generate() {
                     glm::vec3(x, 0, z),
                     chunkData,
             };
+            spdlog::info("Generated chunk of {}", chunk.data.size());
             _worldEventTopic->publishToSubcribers(chunk);
         }
+    }
+}
+
+void World::start() {
+    while (1) {
+        generate();
     }
 }

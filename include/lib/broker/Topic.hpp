@@ -6,7 +6,8 @@
 #define APP_TOPIC_HPP
 
 #include <unordered_map>
-#include "Subscription.hpp"
+#include "AsyncSubscription.hpp"
+#include "SyncSubscription.hpp"
 
 template<typename T, typename U>
 class Topic {
@@ -17,26 +18,39 @@ public:
         return _name;
     }
 
-    std::shared_ptr<Subscription<T, U>> subscribeAs(const std::string &subscriptionName) {
-        auto subscription = std::make_shared<Subscription<T, U>>(subscriptionName, this);
+    std::shared_ptr<AsyncSubscription<T, U>> createAsyncSubscribe(const std::string &subscriptionName) {
+        auto subscription = std::make_shared<AsyncSubscription<T, U>>(subscriptionName, this);
         _subscribers[subscriptionName] = subscription;
         return subscription;
     }
 
-    moodycamel::ConcurrentQueue<U> *operator->() {
-        return &_queue;
+
+    std::shared_ptr<SyncSubscription<T, U>> createSyncSubscribe(const std::string &subscriptionName, const SyncSubscriptionCallback<U> &callback) {
+        auto subscription = std::make_shared<SyncSubscription<T, U>>(subscriptionName, callback, this);
+        _subscribers[subscriptionName] = subscription;
+        return subscription;
+    }
+
+    bool tryPull(U& item) {
+        return _queue.try_dequeue(item);
     }
 
     void publishToSubcribers(const T &data) {
         for (auto &subscriber : _subscribers) {
-            (*subscriber.second)->enqueue(data);
+            subscriber.second->push(data);
         }
+    }
+
+    // Only used bu Subscriptions
+
+    bool push(const U& item) {
+        return _queue.enqueue(item);
     }
 
 private:
     std::string _name;
     moodycamel::ConcurrentQueue<U> _queue;
-    std::unordered_map<std::string, std::shared_ptr<Subscription<T, U>>> _subscribers;
+    std::unordered_map<std::string, std::shared_ptr<ASubscription<T, U>>> _subscribers;
 };
 
 
