@@ -31,7 +31,7 @@ public:
         return subscription;
     }
 
-    bool tryPull(U& item) {
+    bool tryPull(Message<U> &item) {
         return _queue.try_dequeue(item);
     }
 
@@ -41,15 +41,19 @@ public:
         }
     }
 
-    // Only used bu Subscriptions
+    void publishToSubcriber(const std::string &subscriptionName, const T &data) {
+        _subscribers[subscriptionName]->push(data);
+    }
 
-    bool push(const U& item) {
+    // Only used by Subscriptions
+
+    bool push(const Message<U> &item) {
         return _queue.enqueue(item);
     }
 
 private:
     std::string _name;
-    moodycamel::ConcurrentQueue<U> _queue;
+    moodycamel::ConcurrentQueue<Message<U>> _queue;
     std::unordered_map<std::string, std::shared_ptr<ASubscription<T, U>>> _subscribers;
 };
 

@@ -12,6 +12,12 @@
 template<typename T, typename U>
 class Topic;
 
+template<typename T>
+struct Message {
+    std::string origin;
+    T data;
+};
+
 template<typename T, typename U>
 class ASubscription {
 public:
@@ -25,7 +31,7 @@ public:
         return _topic;
     }
 
-    bool pushToTopic(const U& item) {
+    bool pushToTopic(const Message<U> &item) {
          return ASubscription<T, U>::_topic->push(item);
     }
 

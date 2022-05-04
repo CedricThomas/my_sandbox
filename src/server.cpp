@@ -20,7 +20,7 @@ static void configure(std::shared_ptr<BundleAtlas> &bundleAtlas) {
 static void start(std::shared_ptr<BundleAtlas> &bundleAtlas) {
     MessageBroker<WorldEvent, GameEvent> broker;
     auto topic = broker.createTopic(WORLD_EVENT_TOPIC);
-    Pool pool(1, 2);
+    Pool pool(3);
 
     World world(topic, bundleAtlas);
     world.generate();
