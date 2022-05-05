@@ -25,7 +25,7 @@ public:
     }
 
 
-    std::shared_ptr<SyncSubscription<T, U>> createSyncSubscribe(const std::string &subscriptionName, const SyncSubscriptionCallback<U> &callback) {
+    std::shared_ptr<SyncSubscription<T, U>> createSyncSubscribe(const std::string &subscriptionName, const SyncSubscriptionCallback<T> &callback) {
         auto subscription = std::make_shared<SyncSubscription<T, U>>(subscriptionName, callback, this);
         _subscribers[subscriptionName] = subscription;
         return subscription;
@@ -49,6 +49,10 @@ public:
 
     bool push(const Message<U> &item) {
         return _queue.enqueue(item);
+    }
+
+    void removeSubscriber(const std::string &subscriptionName) {
+        _subscribers.erase(subscriptionName);
     }
 
 private:

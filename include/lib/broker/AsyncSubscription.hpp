@@ -8,7 +8,7 @@
 #include <string>
 #include <memory>
 #include <utility>
-#include "lib/containers/concurrentqueue.h"
+#include "lib/containers/blockingconcurrentqueue.h"
 #include "ASubscription.hpp"
 
 template<typename T, typename U>
@@ -20,13 +20,17 @@ public:
         return _queue.try_dequeue(item);
     }
 
+    void pull(T& item) {
+        _queue.wait_dequeue(item);
+    }
+
     // Only used by the topic
 
     bool push(const T& item) {
         return _queue.enqueue(item);
     }
 private:
-    moodycamel::ConcurrentQueue<T> _queue;
+    moodycamel::BlockingConcurrentQueue<T> _queue;
 };
 
 

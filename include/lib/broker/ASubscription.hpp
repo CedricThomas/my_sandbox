@@ -40,6 +40,8 @@ public:
 
     virtual bool tryPull(T& item) = 0;
 
+    virtual void pull(T& item) = 0;
+
     // Only use by the topic
 
     virtual bool push(const T& item) = 0;

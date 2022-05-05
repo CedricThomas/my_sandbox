@@ -26,6 +26,10 @@ public:
         return _topics[topicName]->createSyncSubscribe(subscriptionName, callback);
     }
 
+    void removeSubscription(const std::string &topicName, const std::string &subscriptionName) {
+        _topics[topicName]->removeSubscription(subscriptionName);
+    }
+
 private:
     std::unordered_map<std::string, std::shared_ptr<Topic<T, U>>> _topics;
 };
