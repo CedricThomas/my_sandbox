@@ -13,13 +13,19 @@
 
 class Client {
 public:
-    Client(std::shared_ptr<Topic<WorldEvent, GameEvent>> topic, const std::string &address, int port);
+    Client(
+            std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic,
+            std::shared_ptr<ASubscription<WorldEvent, GameEvent>> gameSubscription,
+            const std::string &address,
+            int port
+    );
     virtual ~Client();
-    void start();
-
+    void listenServer();
+    void listenGame();
 
 private:
-    std::shared_ptr<Topic<WorldEvent, GameEvent>> _topic;
+    std::shared_ptr<Topic<WorldEvent, GameEvent>> _worldTopic;
+    std::shared_ptr<ASubscription<WorldEvent, GameEvent>> _gameSubscription;
     ENetHost *_host;
     ENetPeer *_peer;
     bool _disconnected;

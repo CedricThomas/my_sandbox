@@ -35,7 +35,7 @@ static void start(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr<Tex
     auto application = Application::getInstance();
     MessageBroker<WorldEvent, GameEvent> broker;
     auto topic = broker.createTopic(WORLD_EVENT_TOPIC);
-        Pool pool(1, 2);
+    Pool pool(3, 3);
 
     application->registerGame(
             std::make_unique<Game>(
@@ -49,8 +49,8 @@ static void start(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr<Tex
             )
     );
     pool.addJob([&]() {
-        Client client(topic, "127.0.0.1", 7777);
-        client.start();
+//        Client client(topic, "127.0.0.1", 7777);
+//        client.start();
     });
 
 //    pool.addJob([&]() {

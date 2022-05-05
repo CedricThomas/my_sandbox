@@ -3,12 +3,12 @@
 //
 #include "protocol/Event.hpp"
 
-Event::RawEvent::RawEvent(unsigned int size, void *data) {
+Event::RawEvent::RawEvent(size_t size, void *data) {
     this->_size = size;
     this->_data = data;
 }
 
-Event::RawEvent::RawEvent(unsigned int size, EventType type) {
+Event::RawEvent::RawEvent(size_t size, EventType type) {
     this->_size = size;
     this->_data = new unsigned char[size + sizeof(EventType)];
     ((EventType *)this->_data)[0] = type;
@@ -18,7 +18,7 @@ void *Event::RawEvent::getData() const {
     return ((EventType *)_data + 1);
 }
 
-unsigned int Event::RawEvent::getSize() const {
+size_t Event::RawEvent::getSize() const {
     return this->_size;
 }
 

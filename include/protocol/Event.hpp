@@ -5,6 +5,8 @@
 #ifndef APP_EVENT_HPP
 #define APP_EVENT_HPP
 
+#include <cstddef>
+
 using EventType = unsigned short;
 
 class Event {
@@ -12,18 +14,20 @@ public:
 
     class RawEvent {
     public:
-        explicit RawEvent(unsigned int size, void *data);
+        RawEvent() = default;
 
-        explicit RawEvent(unsigned int size, EventType type);
+        explicit RawEvent(size_t size, void *data);
+
+        explicit RawEvent(size_t size, EventType type);
 
         void *getData() const;
 
-        unsigned int getSize() const;
+        size_t getSize() const;
 
         EventType getType() const;
 
     private:
-        unsigned int _size;
+        size_t _size;
         void *_data;
     };
 

@@ -21,3 +21,9 @@ void UnloadChunk::load(const Event::RawEvent &event) {
 EventType UnloadChunk::getType() const {
     return static_cast<EventType>(WorldEventType::UNLOAD_CHUNK);
 }
+
+WorldEvent UnloadChunk::deserialize(const Event::RawEvent &rawEvent) {
+    auto *event = new UnloadChunk();
+    event->load(rawEvent);
+    return std::shared_ptr<Event>(event);
+}

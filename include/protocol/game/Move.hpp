@@ -1,16 +1,16 @@
 //
-// Created by arzad on 04/05/2022.
+// Created by arzad on 05/05/2022.
 //
 
-#ifndef WORLD_UNLOADCHUNK_HPP
-#define WORLD_UNLOADCHUNK_HPP
+#ifndef APP_MOVE_HPP
+#define APP_MOVE_HPP
 
 #include <memory>
 #include "glm/vec3.hpp"
 #include "protocol/Event.hpp"
 #include "Events.hpp"
 
-struct UnloadChunk: public Event {
+struct Move: public Event {
 
     RawEvent serialize() override;
 
@@ -18,10 +18,9 @@ struct UnloadChunk: public Event {
 
     EventType getType() const override;
 
-    static WorldEvent deserialize(const RawEvent &event);
+    static GameEvent deserialize(const RawEvent &event);
 
     glm::vec3 position;
 };
 
-
-#endif //WORLD_UNLOADCHUNK_HPP
+#endif //APP_MOVE_HPP

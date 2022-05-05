@@ -8,18 +8,29 @@ include_directories(
 
 
 set(PROTOCOL_SRC
-        include/protocol/world/Events.hpp
-        include/protocol/game/Events.hpp
-
         include/protocol/Event.hpp
         src/protocol/Event.cpp
+
+
+        include/protocol/world/Events.hpp
+        include/protocol/world/Deserialize.hpp
+        include/protocol/world/Types.hpp
 
         src/protocol/world/LoadChunk.cpp
         include/protocol/world/LoadChunk.hpp
 
-        src/protocol/world/UnloadChunk.cpp
         include/protocol/world/UnloadChunk.hpp
-        include/protocol/world/Types.hpp)
+        src/protocol/world/UnloadChunk.cpp
+
+
+        include/protocol/game/Events.hpp
+        src/protocol/game/Events.cpp
+        include/protocol/game/Deserialize.hpp
+        include/protocol/game/Types.hpp
+
+        src/protocol/game/Move.cpp
+        include/protocol/game/Move.hpp
+)
 
 set(BUNDLING_SRC
         include/bundling/DefaultBlockBundle.hpp
@@ -120,6 +131,8 @@ set(COMMON_LIB_SRC
 
         include/lib/containers/PairHash.hpp
         include/lib/containers/concurrentqueue.h
+        include/lib/containers/blockingconcurrentqueue.h
+        include/lib/containers/lightweightsemaphore.h
         include/lib/containers/Flat3DArray.hpp
 
         include/lib/broker/MessageBroker.hpp

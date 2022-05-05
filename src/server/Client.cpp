@@ -3,9 +3,14 @@
 //
 #include "server/Client.hpp"
 #include "world/World.hpp"
+#include "protocol/game/Deserialize.hpp"
 
-Client::Client(std::shared_ptr<Topic<WorldEvent, GameEvent>> topic, const std::string &address, int port) :
-        _topic(topic),
+
+Client::Client(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic,
+               std::shared_ptr<ASubscription<WorldEvent, GameEvent>> gameSubscription, const std::string &address,
+               int port) :
+        _worldTopic(worldTopic),
+        _gameSubscription(gameSubscription),
         _host(),
         _peer(),
         _disconnected(false) {
@@ -39,43 +44,48 @@ Client::Client(std::shared_ptr<Topic<WorldEvent, GameEvent>> topic, const std::s
     }
 }
 
-void Client::start() {
+void Client::listenServer() {
     ENetEvent event;
-
+    Event::RawEvent rawEvent;
     while (enet_host_service(_host, &event, 3000) > 0) {
         switch (event.type) {
             case ENET_EVENT_TYPE_RECEIVE:
-                [&]() {
-                    Chunk chunk {
-                            glm::vec3(0, 0, 0),
-                            Flat3DArray<BlockTemplateBundledID>(CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH)
-                    };
-
-                    std::memcpy(&chunk.position, event.packet->data, sizeof chunk.position);
-                    std::memcpy((void *) &(chunk.data.getData()[0]), event.packet->data + sizeof chunk.position, sizeof(BlockTemplateBundledID) * chunk.data.size());
-//                    _topic.get()->publishToSubcribers(chunk);
-                    /* Clean up the packet now that we're done using it. */
-                    enet_packet_destroy(event.packet);
-                }();
+                rawEvent = Event::RawEvent(event.packet->dataLength, event.packet->data);
+                _worldTopic->push(
+                        Message<WorldEvent>{
+                                "Server",
+                                GameEventsDeserializer.at(rawEvent.getType())(rawEvent)
+                        }
+                );
+                enet_packet_destroy(event.packet);
                 break;
             case ENET_EVENT_TYPE_DISCONNECT:
                 puts("Disconnection succeeded.");
                 _disconnected = true;
-                break;
+                return;
             case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT:
                 _disconnected = true;
-                break;
+                return;
             default:
                 break;
-
         }
     }
+
 }
 
 Client::~Client() {
     if (!_disconnected) {
         enet_peer_reset(_peer);
     }
-
     enet_host_destroy(_host);
+}
+
+void Client::listenGame() {
+    while (_disconnected) {
+        GameEvent event;
+        _gameSubscription->pull(event);
+        auto rawEvent =  event->serialize();
+        auto packet = enet_packet_create(rawEvent.getData(), rawEvent.getSize(), ENET_PACKET_FLAG_RELIABLE);
+        enet_peer_send(_peer, 0, packet);
+    }
 }

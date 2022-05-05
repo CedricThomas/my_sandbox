@@ -10,6 +10,8 @@
 #include "protocol/world/Events.hpp"
 #include "protocol/game/Events.hpp"
 #include "bundling/BundleAtlas.hpp"
+#include "glm/vec3.hpp"
+#include "lib/containers/Flat3DArray.hpp"
 
 #define CHUNK_WIDTH 16
 #define CHUNK_HEIGHT 255

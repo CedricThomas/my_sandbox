@@ -2,13 +2,14 @@
 // Created by arzad on 04/05/2022.
 //
 
-#ifndef APP_LOADCHUNK_HPP
-#define APP_LOADCHUNK_HPP
+#ifndef WORLD_LOADCHUNK_HPP
+#define WORLD_LOADCHUNK_HPP
 
 #include "glm/vec3.hpp"
 #include "protocol/Event.hpp"
 #include "bundling/Bundle.hpp"
 #include "lib/containers/Flat3DArray.hpp"
+#include "Events.hpp"
 
 struct LoadChunk: public Event {
 
@@ -18,9 +19,11 @@ struct LoadChunk: public Event {
 
     EventType getType() const override;
 
+    static WorldEvent deserialize(const RawEvent &event);
+
     glm::vec3 position;
     Flat3DArray<BlockTemplateBundledID> data;
 };
 
 
-#endif //APP_LOADCHUNK_HPP
+#endif //WORLD_LOADCHUNK_HPP

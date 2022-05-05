@@ -46,19 +46,19 @@ void Game::onRender() {
     WorldEvent event;
     auto hasData = _worldEventSubscription->tryPull(event);
     if (hasData) {
-        if (std::holds_alternative<LoadChunk>(event)) {
-            auto chunk = std::get<LoadChunk>(event);
-            _mesher.insertChunk(Chunk{
-                chunk.position,
-                chunk.data,
-            });
-            _mesher.meshUpdates();
-        }
-        if (std::holds_alternative<UnloadChunk>(event)) {
-            auto chunk = std::get<UnloadChunk>(event);
-            _mesher.removeChunk(chunk.position);
-            _mesher.meshUpdates();
-        }
+//        if (std::holds_alternative<LoadChunk>(event)) {
+//            auto chunk = std::get<LoadChunk>(event);
+//            _mesher.insertChunk(Chunk{
+//                chunk.position,
+//                chunk.data,
+//            });
+//            _mesher.meshUpdates();
+//        }
+//        if (std::holds_alternative<UnloadChunk>(event)) {
+//            auto chunk = std::get<UnloadChunk>(event);
+//            _mesher.removeChunk(chunk.position);
+//            _mesher.meshUpdates();
+//        }
     }
     for (auto &renderer : _renderers) {
         renderer->render(*this);

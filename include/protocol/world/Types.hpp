@@ -2,8 +2,8 @@
 // Created by arzad on 04/05/2022.
 //
 
-#ifndef APP_TYPES_HPP
-#define APP_TYPES_HPP
+#ifndef WORLD_TYPES_HPP
+#define WORLD_TYPES_HPP
 
 #include "protocol/Event.hpp"
 
@@ -12,4 +12,4 @@ enum class WorldEventType : EventType {
     UNLOAD_CHUNK = 1
 };
 
-#endif //APP_TYPES_HPP
+#endif //WORLD_TYPES_HPP

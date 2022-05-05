@@ -16,6 +16,9 @@
 class Server {
 public:
     Server(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic, int port);
+
+    virtual ~Server();
+
     void start();
 
 private:

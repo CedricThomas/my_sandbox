@@ -4,6 +4,7 @@
 
 #include "protocol/world/LoadChunk.hpp"
 #include "protocol/world/Types.hpp"
+#include "protocol/world/Events.hpp"
 
 Event::RawEvent LoadChunk::serialize() {
     auto zip = data.zip();
@@ -23,4 +24,10 @@ void LoadChunk::load(const Event::RawEvent &event) {
 
 EventType LoadChunk::getType() const {
     return static_cast<EventType>(WorldEventType::LOAD_CHUNK);
+}
+
+WorldEvent LoadChunk::deserialize(const Event::RawEvent &rawEvent) {
+    auto *event = new LoadChunk();
+    event->load(rawEvent);
+    return std::shared_ptr<Event>(event);
 }
