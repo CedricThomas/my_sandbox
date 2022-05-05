@@ -53,7 +53,7 @@ void Client::start() {
 
                     std::memcpy(&chunk.position, event.packet->data, sizeof chunk.position);
                     std::memcpy((void *) &(chunk.data.getData()[0]), event.packet->data + sizeof chunk.position, sizeof(BlockTemplateBundledID) * chunk.data.size());
-                    _topic.get()->publishToSubcribers(chunk);
+//                    _topic.get()->publishToSubcribers(chunk);
                     /* Clean up the packet now that we're done using it. */
                     enet_packet_destroy(event.packet);
                 }();

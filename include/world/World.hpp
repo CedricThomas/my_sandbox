@@ -7,12 +7,18 @@
 
 #include <memory>
 #include "lib/broker/Topic.hpp"
-#include "Events.hpp"
-#include "application/game/Events.hpp"
+#include "protocol/world/Events.hpp"
+#include "protocol/game/Events.hpp"
 #include "bundling/BundleAtlas.hpp"
 
 #define CHUNK_WIDTH 16
 #define CHUNK_HEIGHT 255
+
+struct Chunk {
+    glm::vec3 position;
+    Flat3DArray<BlockTemplateBundledID> data;
+};
+using ChunkMap = std::unordered_map<glm::vec3, Chunk, std::hash<glm::vec3>>;
 
 class World {
 public:

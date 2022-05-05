@@ -14,8 +14,8 @@
 #include "application/game/renderer/voxel/Mesher.hpp"
 #include "AGame.hpp"
 #include "lib/broker/ASubscription.hpp"
-#include "Events.hpp"
-#include "world/Events.hpp"
+#include "protocol/game/Events.hpp"
+#include "protocol/world/Events.hpp"
 
 class Game : public AGame {
 public:

@@ -9,7 +9,6 @@
 #include "application/game/texture/TextureAtlas.hpp"
 #include "application/game/Game.hpp"
 #include "lib/broker/MessageBroker.hpp"
-#include "application/game/Events.hpp"
 #include "lib/config.hpp"
 #include "server/Client.hpp"
 

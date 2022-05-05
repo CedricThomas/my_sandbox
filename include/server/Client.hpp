@@ -8,8 +8,8 @@
 #include <memory>
 #include "lib/enet.h"
 #include "lib/broker/Topic.hpp"
-#include "world/Events.hpp"
-#include "application/game/Events.hpp"
+#include "protocol/world/Events.hpp"
+#include "protocol/game/Events.hpp"
 
 class Client {
 public:

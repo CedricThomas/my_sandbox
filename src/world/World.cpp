@@ -35,7 +35,7 @@ void World::generate() {
                     chunkData,
             };
             spdlog::info("Generated chunk of {}", chunk.data.size());
-            _worldEventTopic->publishToSubcribers(chunk);
+//            _worldEventTopic->publishToSubcribers(chunk);
         }
     }
 }

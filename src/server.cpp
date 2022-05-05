@@ -6,7 +6,6 @@
 #include "bundling/DefaultBlockBundle.hpp"
 #include "bundling/BundleAtlas.hpp"
 #include "lib/broker/MessageBroker.hpp"
-#include "application/game/Events.hpp"
 #include "lib/config.hpp"
 #include "server/Server.hpp"
 #include "server/Enet.hpp"
@@ -25,11 +24,11 @@ static void start(std::shared_ptr<BundleAtlas> &bundleAtlas) {
     World world(topic, bundleAtlas);
     world.generate();
     pool.addJob([&]() {
-        Server server(
-                broker.createAsyncSubscription(WORLD_EVENT_TOPIC, REMOTE_GAME_EVENT_SUBSCRIPTION),
-                7777
-        );
-        server.start();
+//        Server server(
+//                broker.createAsyncSubscription(WORLD_EVENT_TOPIC, REMOTE_GAME_EVENT_SUBSCRIPTION),
+//                7777
+//        );
+//        server.start();
     });
     world.start();
     pool.shutdown();

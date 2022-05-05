@@ -8,9 +8,18 @@ include_directories(
 
 
 set(PROTOCOL_SRC
-        include/world/Events.hpp
-        include/application/game/Events.hpp
-)
+        include/protocol/world/Events.hpp
+        include/protocol/game/Events.hpp
+
+        include/protocol/Event.hpp
+        src/protocol/Event.cpp
+
+        src/protocol/world/LoadChunk.cpp
+        include/protocol/world/LoadChunk.hpp
+
+        src/protocol/world/UnloadChunk.cpp
+        include/protocol/world/UnloadChunk.hpp
+        include/protocol/world/Types.hpp)
 
 set(BUNDLING_SRC
         include/bundling/DefaultBlockBundle.hpp
@@ -134,7 +143,7 @@ set(APPLICATION_SRC
         ${SERVER_SRC}
         ${COMMON_LIB_SRC}
         src/app.cpp
-        include/lib/broker/ASubscription.hpp)
+)
 
 set(SERVER_SRC
         ${PROTOCOL_SRC}

@@ -31,8 +31,11 @@ public:
         return _topic;
     }
 
-    bool pushToTopic(const Message<U> &item) {
-         return ASubscription<T, U>::_topic->push(item);
+    bool pushToTopic(const U &item) {
+         return _topic->push(Message{
+             _name,
+             item
+         });
     }
 
     virtual bool tryPull(T& item) = 0;

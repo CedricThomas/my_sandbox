@@ -7,19 +7,19 @@
 
 #include <memory>
 #include "lib/enet.h"
-#include "world/Events.hpp"
-#include "application/game/Events.hpp"
-#include "lib/broker/AsyncSubscription.hpp"
+#include "protocol/world/Events.hpp"
+#include "protocol/game/Events.hpp"
+#include "lib/broker/Topic.hpp"
 
 #define MAX_CLIENTS 32
 
 class Server {
 public:
-    Server(std::shared_ptr<ASubscription<WorldEvent, GameEvent>> subscription, int port);
+    Server(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic, int port);
     void start();
 
 private:
-    std::shared_ptr<ASubscription<WorldEvent, GameEvent>> _subscription;
+    std::shared_ptr<Topic<WorldEvent, GameEvent>> _worldTopic;
     ENetHost *_host;
 };
 
