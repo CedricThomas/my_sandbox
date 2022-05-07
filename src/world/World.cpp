@@ -7,15 +7,19 @@
 #include "bundling/DefaultBlockBundle.hpp"
 #include "protocol/world/LoadChunk.hpp"
 #include "protocol/world/UnloadChunk.hpp"
+#include "protocol/game/Types.hpp"
+#include "protocol/game/Move.hpp"
 
 World::World(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldEventTopic, std::shared_ptr<BundleAtlas> bundleAtlas)
-: _worldEventTopic(std::move(worldEventTopic)), _bundleAtlas(std::move(bundleAtlas)) {}
+        : _worldEventTopic(std::move(worldEventTopic)), _bundleAtlas(std::move(bundleAtlas)) {}
 
 World::~World() {
 }
 
-void World::generate() {
-    int radius = 10;
+[[noreturn]] void World::start() {
+    Message<GameEvent> event;
+    bool hasEvent;
+
     Flat3DArray<BlockTemplateBundledID> chunkData(CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
     for (auto x = 0; x < CHUNK_WIDTH; x++) {
         for (auto y = 0; y < CHUNK_HEIGHT / 10; y++) {
@@ -30,15 +34,26 @@ void World::generate() {
             }
         }
     }
-    for (int z = 0; z < radius; z++) {
-        for (int x = 0; x < radius; x++) {
-            _worldEventTopic->publishToSubcribers(std::make_shared<LoadChunk>(glm::vec3(x, 0, z), chunkData));
-        }
-    }
-}
 
-void World::start() {
-    while (1) {
-        generate();
+    while (true) {
+        hasEvent = _worldEventTopic->tryPull(event);
+        if (!hasEvent) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            continue;
+        }
+        Move *move;
+        switch (static_cast<GameEventType>(event.data->getType())) {
+            case GameEventType::MOVE:
+                spdlog::info("Received move event");
+                move = static_cast<Move *>(event.data.get());
+                _worldEventTopic->publishToSubcriber(
+                        event.origin,
+                     std::make_shared<LoadChunk>(
+                             move->position,
+                             chunkData
+                     )
+                 );
+                break;
+        }
     }
 }

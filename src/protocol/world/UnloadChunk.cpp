@@ -9,13 +9,13 @@ UnloadChunk::UnloadChunk(glm::vec3 position) : position(position) {}
 
 Event::RawEvent UnloadChunk::serialize() {
     Event::RawEvent event(sizeof(position), static_cast<unsigned int>(WorldEventType::UNLOAD_CHUNK));
-    auto eventData = event.getData();
+    auto eventData = event.getPayload();
     std::memcpy(eventData, &position, sizeof(position));
     return event;
 }
 
 void UnloadChunk::load(const Event::RawEvent &event) {
-    auto eventData = event.getData();
+    auto eventData = event.getPayload();
     std::memcpy(&position, eventData, sizeof(position));
 }
 

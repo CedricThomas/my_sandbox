@@ -8,6 +8,7 @@
 #include "protocol/world/Types.hpp"
 #include "protocol/world/LoadChunk.hpp"
 #include "protocol/world/UnloadChunk.hpp"
+#include "protocol/game/Move.hpp"
 
 Game::Game(
         const std::shared_ptr<Application> &application,
@@ -41,6 +42,7 @@ void Game::onInput() {
         _camera.processKeyboard(Camera::Movement::LEFT, _tracker.getFrameDelta());
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         _camera.processKeyboard(Camera::Movement::RIGHT, _tracker.getFrameDelta());
+    _worldEventSubscription->pushToTopic(std::make_shared<Move>(_camera.getPosition()));
 }
 
 void Game::onRender() {

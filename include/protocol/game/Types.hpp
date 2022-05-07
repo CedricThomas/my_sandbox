@@ -8,7 +8,7 @@
 #include "protocol/Event.hpp"
 
 enum class GameEventType : EventType {
-    MOVE = 0,
+    MOVE = 100,
 };
 
 #endif //APP_TYPES_HPP

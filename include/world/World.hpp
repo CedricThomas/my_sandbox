@@ -28,7 +28,7 @@ public:
 
     void generate();
 
-    void start();
+    [[noreturn]] void start();
 
     ~World();
 

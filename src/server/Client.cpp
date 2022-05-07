@@ -7,11 +7,11 @@
 #include "protocol/world/Deserialize.hpp"
 
 
-Client::Client(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic,
-               std::shared_ptr<ASubscription<WorldEvent, GameEvent>> gameSubscription, const std::string &address,
-               int port) :
+Client::Client(
+        std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic,
+        const std::string &address,
+        int port) :
         _worldTopic(worldTopic),
-        _gameSubscription(gameSubscription),
         _host(),
         _peer(),
         _disconnected(false) {
@@ -46,12 +46,14 @@ Client::Client(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic,
 }
 
 void Client::listenServer() {
-    ENetEvent event {};
-    Event::RawEvent rawEvent {};
+    ENetEvent event{};
+    Event::RawEvent rawEvent{};
     while (enet_host_service(_host, &event, 3000) > 0) {
         switch (event.type) {
             case ENET_EVENT_TYPE_RECEIVE:
+                // receive events from the world server
                 rawEvent = Event::RawEvent(event.packet->dataLength, event.packet->data);
+                spdlog::info("Receiving world event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
                 _worldTopic->publishToSubcribers(
                         WorldEventsDeserializer.at(rawEvent.getType())(rawEvent)
                 );
@@ -79,15 +81,19 @@ Client::~Client() {
 }
 
 void Client::listenGame() {
-    while (_disconnected) {
-        GameEvent event;
-        _gameSubscription->pull(event);
-        auto rawEvent = event->serialize();
+    while (!_disconnected) {
+        // send game events to the world server
+        Message<GameEvent> event;
+        spdlog::info("Pulling events...");
+        _worldTopic->pull(event);
+        auto rawEvent = event.data->serialize();
         auto packet = enet_packet_create(
                 rawEvent.getData(),
                 rawEvent.getSize(),
                 ENET_PACKET_FLAG_RELIABLE
         );
+        spdlog::info("Sending game event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
         enet_peer_send(_peer, 0, packet);
+        enet_host_flush(_host);
     }
 }

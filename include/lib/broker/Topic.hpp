@@ -14,50 +14,26 @@ class Topic {
 public:
     explicit Topic(const std::string &name) : _name(name), _queue(), _subscribers() {}
 
-    const std::string &getName() const {
-        return _name;
-    }
+    const std::string &getName() const;
 
-    std::shared_ptr<AsyncSubscription<T, U>> createAsyncSubscribe(const std::string &subscriptionName) {
-        auto subscription = std::make_shared<AsyncSubscription<T, U>>(subscriptionName, this);
-        _subscribers[subscriptionName] = subscription;
-        return subscription;
-    }
+    std::shared_ptr<AsyncSubscription<T, U>> createAsyncSubscribe(const std::string &subscriptionName);
 
 
-    std::shared_ptr<SyncSubscription<T, U>> createSyncSubscribe(const std::string &subscriptionName, const SyncSubscriptionCallback<T> &callback) {
-        auto subscription = std::make_shared<SyncSubscription<T, U>>(subscriptionName, callback, this);
-        _subscribers[subscriptionName] = subscription;
-        return subscription;
-    }
+    std::shared_ptr<SyncSubscription<T, U>> createSyncSubscribe(const std::string &subscriptionName, const SyncSubscriptionCallback<T> &callback);
 
-    bool tryPull(Message<U> &item) {
-        return _queue.try_dequeue(item);
-    }
+    bool tryPull(Message<U> &item);
 
-    void pull(Message<U> &item) {
-        return _queue.wait_dequeue(item);
-    }
+    void pull(Message<U> &item);
 
-    void publishToSubcribers(const T &data) {
-        for (auto &subscriber : _subscribers) {
-            subscriber.second->push(data);
-        }
-    }
+    void publishToSubcribers(const T &data);
 
-    void publishToSubcriber(const std::string &subscriptionName, const T &data) {
-        _subscribers[subscriptionName]->push(data);
-    }
+    void publishToSubcriber(const std::string &subscriptionName, const T &data);
 
     // Only used by Subscriptions
 
-    bool push(const Message<U> &item) {
-        return _queue.enqueue(item);
-    }
+    bool push(const Message<U> &item);
 
-    void removeSubscriber(const std::string &subscriptionName) {
-        _subscribers.erase(subscriptionName);
-    }
+    void removeSubscriber(const std::string &subscriptionName);
 
 private:
     std::string _name;
@@ -65,5 +41,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<ASubscription<T, U>>> _subscribers;
 };
 
+#include "Topic.tpp"
 
 #endif //APP_TOPIC_HPP

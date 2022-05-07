@@ -4,7 +4,7 @@
 
 #include "server/Server.hpp"
 #include "spdlog/spdlog.h"
-#include "protocol/world/Deserialize.hpp"
+#include "protocol/game/Deserialize.hpp"
 
 Server::Server(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic, int port)
         : _worldTopic(worldTopic),
@@ -31,22 +31,25 @@ void Server::start() {
             case ENET_EVENT_TYPE_CONNECT:
                 event.peer->data = _worldTopic->createSyncSubscribe(
                         createRemoteGameSubscription((unsigned int) event.peer->connectID),
-                        [event](const GameEvent &gameEvent) {
+                        [event](const WorldEvent &gameEvent) {
                             auto rawEvent = gameEvent->serialize();
                             auto packet = enet_packet_create(
                                     rawEvent.getData(),
                                     rawEvent.getSize(),
                                     ENET_PROTOCOL_COMMAND_SEND_RELIABLE
                             );
+                            spdlog::info("Sending World event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
                             return enet_peer_send(event.peer, 0, packet) == 0;
                         }
                 ).get();
                 spdlog::info("A new client connected");
                 break;
             case ENET_EVENT_TYPE_RECEIVE:
+                // receive events from the clients and send them to the world
                 rawEvent = Event::RawEvent(event.packet->dataLength, event.packet->data);
-                ((SyncSubscription<WorldEvent, GameEvent> *)event.peer->data)->push(
-                        WorldEventsDeserializer.at(rawEvent.getType())(rawEvent)
+                spdlog::info("Receiving Game event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
+                ((SyncSubscription<WorldEvent, GameEvent> *)event.peer->data)->pushToTopic(
+                        GameEventsDeserializer.at(rawEvent.getType())(rawEvent)
                 );
                 break;
             case ENET_EVENT_TYPE_DISCONNECT:

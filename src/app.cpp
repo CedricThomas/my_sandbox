@@ -34,8 +34,7 @@ static void start(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr<Tex
     auto application = Application::getInstance();
     MessageBroker<WorldEvent, GameEvent> broker;
     auto worldTopic = broker.createTopic(WORLD_EVENT_TOPIC);
-    auto gameSubscription = broker.createAsyncSubscription(WORLD_EVENT_TOPIC, LOCAL_GAME_EVENT_SUBSCRIPTION);
-    Client client(worldTopic, gameSubscription, "127.0.0.1", 7777);
+    Client client(worldTopic, "127.0.0.1", 7777);
     Pool pool(3, 3);
 
     application->registerGame(
@@ -50,12 +49,15 @@ static void start(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr<Tex
             )
     );
     pool.addJob([&]() {
+        spdlog::debug("Listening to the game events...");
         client.listenGame();
     });
 
     pool.addJob([&]() {
+        spdlog::debug("Listening to the server events...");
         client.listenServer();
     });
+    spdlog::debug("Starting the game client");
     application->start();
     pool.shutdown();
 }

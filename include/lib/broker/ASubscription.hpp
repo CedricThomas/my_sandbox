@@ -23,20 +23,11 @@ class ASubscription {
 public:
     explicit ASubscription(std::string name, Topic<T, U> *topic): _name(std::move(name)), _topic(topic) {}
 
-    const std::string &getName() const {
-        return _name;
-    }
+    const std::string &getName() const;
 
-    const std::shared_ptr<Topic<T, U>> &getTopic() const {
-        return _topic;
-    }
+    const std::shared_ptr<Topic<T, U>> &getTopic() const;
 
-    bool pushToTopic(const U &item) {
-         return _topic->push(Message{
-             _name,
-             item
-         });
-    }
+    bool pushToTopic(const U &item);
 
     virtual bool tryPull(T& item) = 0;
 
@@ -50,5 +41,7 @@ protected:
     std::string _name;
     std::shared_ptr<Topic<T, U>> _topic;
 };
+
+#include "ASubscription.tpp"
 
 #endif //APP_ASUBSCRIPTION_HPP

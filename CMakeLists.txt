@@ -137,9 +137,11 @@ set(COMMON_LIB_SRC
 
         include/lib/broker/MessageBroker.hpp
         include/lib/broker/Topic.hpp
+        include/lib/broker/Topic.tpp
         include/lib/broker/AsyncSubscription.hpp
         include/lib/broker/SyncSubscription.hpp
-        include/lib/broker/ASubscription.hpp
+        include/lib/broker/ASubscription.tpp
+        include/lib/broker/ASubscription.tpp
 
         src/lib/resources/ResourcesFinder.cpp
         include/lib/resources/ResourcesFinder.hpp

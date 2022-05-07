@@ -11,13 +11,13 @@ Move::Move(const glm::vec3 &position) : position(position) {}
 
 Event::RawEvent Move::serialize() {
     Event::RawEvent event(sizeof(position), static_cast<unsigned int>(GameEventType::MOVE));
-    auto eventData = event.getData();
+    auto eventData = event.getPayload();
     std::memcpy(eventData, &position, sizeof(position));
     return event;
 }
 
 void Move::load(const Event::RawEvent &event) {
-    auto eventData = event.getData();
+    auto eventData = event.getPayload();
     std::memcpy(&position, eventData, sizeof(position));
 }
 
