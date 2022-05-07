@@ -79,7 +79,6 @@ public:
                     std::to_string(((char *)data - (char *)data_ptr))
             );
         }
-        spdlog::info("Unzipped {} => {} x {} x {}", newData.size(), coords[0], coords[1], coords[2]);
         return Flat3DArray<T>(newData, coords[0], coords[1], coords[2]);
     }
 
@@ -111,7 +110,6 @@ public:
             *((T *) (data + sizeof(CompressionCounterType))) = blockValue;
             data = data + sizeof(CompressionCounterType) + sizeof(T);
         }
-        spdlog::info("Zipping {} => {} x {} x {}", _data.size(), coords[0], coords[1], coords[2]);
         return std::make_pair(size, raw);
     }
 
