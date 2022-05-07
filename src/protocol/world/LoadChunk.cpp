@@ -6,20 +6,29 @@
 #include "protocol/world/Types.hpp"
 #include "protocol/world/Events.hpp"
 
+
+LoadChunk::LoadChunk(const glm::vec3 &position, const Flat3DArray<BlockTemplateBundledID> &data)
+        : position(position),
+          data(data) {}
+
 Event::RawEvent LoadChunk::serialize() {
     auto zip = data.zip();
-    Event::RawEvent event(static_cast<unsigned int>(WorldEventType::LOAD_CHUNK), zip.first + sizeof(position));
-    auto eventData = event.getData();
+    Event::RawEvent event(
+            zip.first + sizeof(position),
+            static_cast<unsigned int>(WorldEventType::LOAD_CHUNK)
+    );
+    auto eventData = event.getPayload();
     std::memcpy(eventData, &position, sizeof(position));
-    std::memcpy((unsigned char *)eventData + sizeof(position), zip.second, zip.first);
+    std::memcpy(((unsigned char *) eventData) + sizeof(position), zip.second, zip.first);
     return event;
 }
 
 void LoadChunk::load(const Event::RawEvent &event) {
-    auto eventData = event.getData();
+    auto eventData = event.getPayload();
     std::memcpy(&position, eventData, sizeof(position));
+    auto zipSize = event.getPayloadSize() - sizeof(position);
     void *zip = (unsigned char *)eventData + sizeof(position);
-    data = Flat3DArray<BlockTemplateBundledID>::unzip(zip);
+    data = Flat3DArray<BlockTemplateBundledID>::unzip(zipSize, zip);
 }
 
 EventType LoadChunk::getType() const {

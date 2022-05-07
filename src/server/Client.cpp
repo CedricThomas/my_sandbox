@@ -4,6 +4,7 @@
 #include "server/Client.hpp"
 #include "world/World.hpp"
 #include "protocol/game/Deserialize.hpp"
+#include "protocol/world/Deserialize.hpp"
 
 
 Client::Client(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic,
@@ -35,7 +36,7 @@ Client::Client(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic,
         throw std::runtime_error("No available peers for initiating an ENet connection.");
     }
     ENetEvent event;
-    if (enet_host_service(_host, &event, 5000) <= 0 || event.type != ENET_EVENT_TYPE_CONNECT) {
+    if (enet_host_service(_host, &event, 3000) <= 0 || event.type != ENET_EVENT_TYPE_CONNECT) {
         /* Either the 5 seconds are up or a disconnect event was */
         /* received. Reset the peer in the event the 5 seconds   */
         /* had run out without any significant event.            */
@@ -45,17 +46,14 @@ Client::Client(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic,
 }
 
 void Client::listenServer() {
-    ENetEvent event;
-    Event::RawEvent rawEvent;
+    ENetEvent event {};
+    Event::RawEvent rawEvent {};
     while (enet_host_service(_host, &event, 3000) > 0) {
         switch (event.type) {
             case ENET_EVENT_TYPE_RECEIVE:
                 rawEvent = Event::RawEvent(event.packet->dataLength, event.packet->data);
-                _worldTopic->push(
-                        Message<WorldEvent>{
-                                "Server",
-                                GameEventsDeserializer.at(rawEvent.getType())(rawEvent)
-                        }
+                _worldTopic->publishToSubcribers(
+                        WorldEventsDeserializer.at(rawEvent.getType())(rawEvent)
                 );
                 enet_packet_destroy(event.packet);
                 break;
@@ -84,8 +82,12 @@ void Client::listenGame() {
     while (_disconnected) {
         GameEvent event;
         _gameSubscription->pull(event);
-        auto rawEvent =  event->serialize();
-        auto packet = enet_packet_create(rawEvent.getData(), rawEvent.getSize(), ENET_PACKET_FLAG_RELIABLE);
+        auto rawEvent = event->serialize();
+        auto packet = enet_packet_create(
+                rawEvent.getData(),
+                rawEvent.getSize(),
+                ENET_PACKET_FLAG_RELIABLE
+        );
         enet_peer_send(_peer, 0, packet);
     }
 }

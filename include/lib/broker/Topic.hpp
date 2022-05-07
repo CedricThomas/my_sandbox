@@ -35,6 +35,10 @@ public:
         return _queue.try_dequeue(item);
     }
 
+    void pull(Message<U> &item) {
+        return _queue.wait_dequeue(item);
+    }
+
     void publishToSubcribers(const T &data) {
         for (auto &subscriber : _subscribers) {
             subscriber.second->push(data);
@@ -57,7 +61,7 @@ public:
 
 private:
     std::string _name;
-    moodycamel::ConcurrentQueue<Message<U>> _queue;
+    moodycamel::BlockingConcurrentQueue<Message<U>> _queue;
     std::unordered_map<std::string, std::shared_ptr<ASubscription<T, U>>> _subscribers;
 };
 

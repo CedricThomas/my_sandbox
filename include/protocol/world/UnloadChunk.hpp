@@ -12,6 +12,10 @@
 
 struct UnloadChunk: public Event {
 
+    UnloadChunk() = default;
+
+    UnloadChunk(glm::vec3 position);
+
     RawEvent serialize() override;
 
     void load(const RawEvent &event) override;

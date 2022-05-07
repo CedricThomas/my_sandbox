@@ -52,10 +52,10 @@ public:
         return _data;
     }
 
-    static Flat3DArray<T> unzip(void *data) {
+    static Flat3DArray<T> unzip(size_t total_size, void *data) {
+        auto data_ptr = data;
         auto coords = static_cast<int *>(data);
-        data = ((unsigned char *)data) + sizeof(int) * 3;
-        spdlog::debug("Unzipping {} {} {}", coords[0], coords[1], coords[2]);
+        data = ((unsigned char *) data) + sizeof(int) * 3;
         std::vector<T> newData(coords[0] * coords[1] * coords[2]);
         auto size = 0;
         auto begin = newData.begin();
@@ -72,6 +72,14 @@ public:
             data = static_cast<unsigned char *>(data) + sizeof(CompressionCounterType) + sizeof(T);
         }
 
+        if (total_size != ((char *)data - (char *)data_ptr)) {
+            throw std::runtime_error(
+                    "Invalid unzip : " +
+                    std::to_string(total_size) + " != " +
+                    std::to_string(((char *)data - (char *)data_ptr))
+            );
+        }
+        spdlog::info("Unzipped {} => {} x {} x {}", newData.size(), coords[0], coords[1], coords[2]);
         return Flat3DArray<T>(newData, coords[0], coords[1], coords[2]);
     }
 
@@ -90,7 +98,7 @@ public:
         coords[0] = _x;
         coords[1] = _y;
         coords[2] = _z;
-        unsigned char *data = ((unsigned char *)raw) + sizeof(int) * 3;
+        unsigned char *data = ((unsigned char *) raw) + sizeof(int) * 3;
         i = 0;
         while (i < _data.size()) {
             blockSize = 0;
@@ -103,7 +111,7 @@ public:
             *((T *) (data + sizeof(CompressionCounterType))) = blockValue;
             data = data + sizeof(CompressionCounterType) + sizeof(T);
         }
-        spdlog::debug("Zip {}", size);
+        spdlog::info("Zipping {} => {} x {} x {}", _data.size(), coords[0], coords[1], coords[2]);
         return std::make_pair(size, raw);
     }
 

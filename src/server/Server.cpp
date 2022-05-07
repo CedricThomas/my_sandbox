@@ -31,13 +31,18 @@ void Server::start() {
             case ENET_EVENT_TYPE_CONNECT:
                 event.peer->data = _worldTopic->createSyncSubscribe(
                         createRemoteGameSubscription((unsigned int) event.peer->connectID),
-                        [&](const GameEvent &gameEvent) {
+                        [event](const GameEvent &gameEvent) {
                             auto rawEvent = gameEvent->serialize();
-                            auto packet = enet_packet_create(rawEvent.getData(), rawEvent.getSize(), ENET_PROTOCOL_COMMAND_SEND_RELIABLE);
+                            auto packet = enet_packet_create(
+                                    rawEvent.getData(),
+                                    rawEvent.getSize(),
+                                    ENET_PROTOCOL_COMMAND_SEND_RELIABLE
+                            );
                             return enet_peer_send(event.peer, 0, packet) == 0;
                         }
                 ).get();
                 spdlog::info("A new client connected");
+                break;
             case ENET_EVENT_TYPE_RECEIVE:
                 rawEvent = Event::RawEvent(event.packet->dataLength, event.packet->data);
                 ((SyncSubscription<WorldEvent, GameEvent> *)event.peer->data)->push(

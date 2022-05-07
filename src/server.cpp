@@ -1,5 +1,4 @@
 #include "spdlog/spdlog.h"
-#include "application/Application.hpp"
 #include "world/World.hpp"
 #include "lib/Pool.hpp"
 #include "lib/resources/ResourcesFinder.hpp"
@@ -19,16 +18,15 @@ static void configure(std::shared_ptr<BundleAtlas> &bundleAtlas) {
 static void start(std::shared_ptr<BundleAtlas> &bundleAtlas) {
     MessageBroker<WorldEvent, GameEvent> broker;
     auto topic = broker.createTopic(WORLD_EVENT_TOPIC);
-    Pool pool(3);
+    Pool pool(3, 3);
 
     World world(topic, bundleAtlas);
-    world.generate();
     pool.addJob([&]() {
-//        Server server(
-//                broker.createAsyncSubscription(WORLD_EVENT_TOPIC, REMOTE_GAME_EVENT_SUBSCRIPTION),
-//                7777
-//        );
-//        server.start();
+        Server server(
+                topic,
+                7777
+        );
+        server.start();
     });
     world.start();
     pool.shutdown();

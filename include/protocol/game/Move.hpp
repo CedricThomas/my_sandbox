@@ -12,6 +12,10 @@
 
 struct Move: public Event {
 
+    Move() = default;
+
+    Move(const glm::vec3 &position);
+
     RawEvent serialize() override;
 
     void load(const RawEvent &event) override;

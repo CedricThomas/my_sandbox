@@ -20,6 +20,10 @@ public:
 
         explicit RawEvent(size_t size, EventType type);
 
+        void *getPayload() const;
+
+        size_t getPayloadSize() const;
+
         void *getData() const;
 
         size_t getSize() const;

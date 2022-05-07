@@ -1,7 +1,6 @@
 #include "server/Enet.hpp"
 #include "spdlog/spdlog.h"
 #include "application/Application.hpp"
-#include "world/World.hpp"
 #include "lib/Pool.hpp"
 #include "lib/resources/ResourcesFinder.hpp"
 #include "bundling/DefaultBlockBundle.hpp"
@@ -34,7 +33,9 @@ static void configure(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr
 static void start(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr<TextureAtlas> &textureAtlas) {
     auto application = Application::getInstance();
     MessageBroker<WorldEvent, GameEvent> broker;
-    auto topic = broker.createTopic(WORLD_EVENT_TOPIC);
+    auto worldTopic = broker.createTopic(WORLD_EVENT_TOPIC);
+    auto gameSubscription = broker.createAsyncSubscription(WORLD_EVENT_TOPIC, LOCAL_GAME_EVENT_SUBSCRIPTION);
+    Client client(worldTopic, gameSubscription, "127.0.0.1", 7777);
     Pool pool(3, 3);
 
     application->registerGame(
@@ -49,14 +50,12 @@ static void start(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr<Tex
             )
     );
     pool.addJob([&]() {
-//        Client client(topic, "127.0.0.1", 7777);
-//        client.start();
+        client.listenGame();
     });
 
-//    pool.addJob([&]() {
-//        World world(topic, bundleAtlas);
-//        world.generate();
-//    });
+    pool.addJob([&]() {
+        client.listenServer();
+    });
     application->start();
     pool.shutdown();
 }

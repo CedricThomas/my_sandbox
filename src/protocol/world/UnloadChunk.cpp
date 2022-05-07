@@ -1,13 +1,14 @@
 //
 // Created by arzad on 04/05/2022.
 //
-
 #include <cstring>
 #include "protocol/world/UnloadChunk.hpp"
 #include "protocol/world/Types.hpp"
 
+UnloadChunk::UnloadChunk(glm::vec3 position) : position(position) {}
+
 Event::RawEvent UnloadChunk::serialize() {
-    Event::RawEvent event(static_cast<unsigned int>(WorldEventType::UNLOAD_CHUNK), sizeof(position));
+    Event::RawEvent event(sizeof(position), static_cast<unsigned int>(WorldEventType::UNLOAD_CHUNK));
     auto eventData = event.getData();
     std::memcpy(eventData, &position, sizeof(position));
     return event;

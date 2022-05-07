@@ -7,8 +7,10 @@
 #include "protocol/game/Types.hpp"
 #include "protocol/game/Events.hpp"
 
+Move::Move(const glm::vec3 &position) : position(position) {}
+
 Event::RawEvent Move::serialize() {
-    Event::RawEvent event(static_cast<unsigned int>(GameEventType::MOVE), sizeof(position));
+    Event::RawEvent event(sizeof(position), static_cast<unsigned int>(GameEventType::MOVE));
     auto eventData = event.getData();
     std::memcpy(eventData, &position, sizeof(position));
     return event;

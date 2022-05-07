@@ -5,6 +5,8 @@
 #include <utility>
 #include "world/World.hpp"
 #include "bundling/DefaultBlockBundle.hpp"
+#include "protocol/world/LoadChunk.hpp"
+#include "protocol/world/UnloadChunk.hpp"
 
 World::World(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldEventTopic, std::shared_ptr<BundleAtlas> bundleAtlas)
 : _worldEventTopic(std::move(worldEventTopic)), _bundleAtlas(std::move(bundleAtlas)) {}
@@ -30,12 +32,7 @@ void World::generate() {
     }
     for (int z = 0; z < radius; z++) {
         for (int x = 0; x < radius; x++) {
-            Chunk chunk = {
-                    glm::vec3(x, 0, z),
-                    chunkData,
-            };
-            spdlog::info("Generated chunk of {}", chunk.data.size());
-//            _worldEventTopic->publishToSubcribers(chunk);
+            _worldEventTopic->publishToSubcribers(std::make_shared<LoadChunk>(glm::vec3(x, 0, z), chunkData));
         }
     }
 }

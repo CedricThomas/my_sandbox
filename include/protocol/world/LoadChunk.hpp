@@ -13,6 +13,10 @@
 
 struct LoadChunk: public Event {
 
+    LoadChunk(const glm::vec3 &position, const Flat3DArray<BlockTemplateBundledID> &data);
+
+    LoadChunk() = default;
+
     RawEvent serialize() override;
 
     void load(const RawEvent &event) override;

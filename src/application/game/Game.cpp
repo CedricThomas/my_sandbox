@@ -5,6 +5,9 @@
 #include "application/game/Game.hpp"
 #include "application/game/renderer/voxel/VoxelRenderer.hpp"
 #include "application/game/renderer/skybox/SkyboxRenderer.hpp"
+#include "protocol/world/Types.hpp"
+#include "protocol/world/LoadChunk.hpp"
+#include "protocol/world/UnloadChunk.hpp"
 
 Game::Game(
         const std::shared_ptr<Application> &application,
@@ -43,22 +46,28 @@ void Game::onInput() {
 void Game::onRender() {
     AGame::onRender();
 
-    WorldEvent event;
-    auto hasData = _worldEventSubscription->tryPull(event);
+    WorldEvent worldEvent;
+    LoadChunk *loadChunk;
+    UnloadChunk *unloadChunk;
+    auto hasData = _worldEventSubscription->tryPull(worldEvent);
     if (hasData) {
-//        if (std::holds_alternative<LoadChunk>(event)) {
-//            auto chunk = std::get<LoadChunk>(event);
-//            _mesher.insertChunk(Chunk{
-//                chunk.position,
-//                chunk.data,
-//            });
-//            _mesher.meshUpdates();
-//        }
-//        if (std::holds_alternative<UnloadChunk>(event)) {
-//            auto chunk = std::get<UnloadChunk>(event);
-//            _mesher.removeChunk(chunk.position);
-//            _mesher.meshUpdates();
-//        }
+        switch (static_cast<WorldEventType>(worldEvent->getType())) {
+            case WorldEventType::LOAD_CHUNK:
+                loadChunk = dynamic_cast<LoadChunk *>(worldEvent.get());
+                _mesher.insertChunk(Chunk{
+                        loadChunk->position,
+                        loadChunk->data,
+                });
+                _mesher.meshUpdates();
+                break;
+            case WorldEventType::UNLOAD_CHUNK:
+                unloadChunk = dynamic_cast<UnloadChunk *>(worldEvent.get());
+                _mesher.removeChunk(unloadChunk->position);
+                _mesher.meshUpdates();
+                break;
+            default:
+                break;
+        }
     }
     for (auto &renderer : _renderers) {
         renderer->render(*this);
