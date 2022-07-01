@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 #include <utility>
+#include <functional>
 #include "lib/containers/concurrentqueue.h"
 
 template<typename T>

@@ -7,7 +7,7 @@
 #include "protocol/world/Events.hpp"
 
 
-LoadChunk::LoadChunk(const glm::vec3 &position, const Flat3DArray<BlockTemplateBundledID> &data)
+LoadChunk::LoadChunk(const glm::vec2 &position, const Flat3DArray<BlockTemplateBundledID> &data)
         : position(position),
           data(data) {}
 

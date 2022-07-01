@@ -14,7 +14,7 @@
 #include "application/game/texture/TextureAtlas.hpp"
 
 using Mesh = Flat3DArray<unsigned char>;
-using MeshMap = std::unordered_map<glm::vec3, Mesh, std::hash<glm::vec3>>;
+using MeshMap = std::unordered_map<glm::vec2, Mesh, std::hash<glm::vec2>>;
 
 #define TOP_SIDE (1 << 0) // 1
 #define BOTTOM_SIDE (1 << 1)// 2
@@ -33,7 +33,7 @@ class Mesher {
 public:
     explicit Mesher(std::shared_ptr<BundleAtlas> bundleAtlas, std::shared_ptr<TextureAtlas> textureAtlas, std::shared_ptr<QuadsMap> quadsMap);
     void insertChunk(const Chunk &chunk);
-    void removeChunk(const glm::vec3 &position);
+    void removeChunk(const glm::vec2 &position);
     void meshUpdates();
 private:
     // mesh a single chunk and return it
@@ -43,17 +43,17 @@ private:
 
     // generate a chunk side mesh from the mesh map
     // it returns true if an update is needed
-    bool generateChunkSideMesh(const glm::vec3 &position, int side);
+    bool generateChunkSideMesh(const glm::vec2 &position, int side);
     // remove common faces from 2 adjacent chunks
     // it returns true if an update is needed
-    bool removeMeshCommonFaces(const glm::vec3 &position, int side);
+    bool removeMeshCommonFaces(const glm::vec2 &position, int side);
 
     std::shared_ptr<BundleAtlas> _bundleAtlas;
     std::shared_ptr<TextureAtlas> _textureAtlas;
     std::shared_ptr<QuadsMap> _quadsMap;
     ChunkMap _chunkMap;
     MeshMap _meshMap;
-    std::unordered_set<glm::vec3, std::hash<glm::vec3>> _meshUpdates;
+    std::unordered_set<glm::vec2, std::hash<glm::vec2>> _meshUpdates;
 };
 
 

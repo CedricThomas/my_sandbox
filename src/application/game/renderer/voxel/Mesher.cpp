@@ -312,16 +312,16 @@ void Mesher::insertChunk(const Chunk &chunk) {
     _meshUpdates.insert(chunk.position);
     // try to update adjacent meshes if cannot doesn't add to the update list
     if (removeMeshCommonFaces(chunk.position, RIGHT_SIDE))
-        _meshUpdates.insert(chunk.position + glm::vec3(1, 0, 0));
+        _meshUpdates.insert(chunk.position + glm::vec2(1, 0));
     if (removeMeshCommonFaces(chunk.position, LEFT_SIDE))
-        _meshUpdates.insert(chunk.position + glm::vec3(-1, 0, 0));
+        _meshUpdates.insert(chunk.position + glm::vec2(-1, 0));
     if (removeMeshCommonFaces(chunk.position, BACK_SIDE))
-        _meshUpdates.insert(chunk.position + glm::vec3(0, 0, -1));
+        _meshUpdates.insert(chunk.position + glm::vec2(0, -1));
     if (removeMeshCommonFaces(chunk.position, FRONT_SIDE))
-        _meshUpdates.insert(chunk.position + glm::vec3(0, 0, 1));
+        _meshUpdates.insert(chunk.position + glm::vec2(0, 1));
 }
 
-void Mesher::removeChunk(const glm::vec3 &position) {
+void Mesher::removeChunk(const glm::vec2 &position) {
     _chunkMap.erase(position);
     _meshMap.erase(position);
 
@@ -330,17 +330,17 @@ void Mesher::removeChunk(const glm::vec3 &position) {
 
     // force to mesh the faces of the adjacent chunks
     // RIGHT
-    if (generateChunkSideMesh(position + glm::vec3(-1, 0, 0), RIGHT_SIDE))
-        _meshUpdates.insert(position + glm::vec3(-1, 0, 0));
+    if (generateChunkSideMesh(position + glm::vec2(-1, 0), RIGHT_SIDE))
+        _meshUpdates.insert(position + glm::vec2(-1, 0));
     // LEFT
-    if (generateChunkSideMesh(position + glm::vec3(1, 0, 0), LEFT_SIDE))
-        _meshUpdates.insert(position + glm::vec3(1, 0, 0));
+    if (generateChunkSideMesh(position + glm::vec2(1, 0), LEFT_SIDE))
+        _meshUpdates.insert(position + glm::vec2(1, 0));
     // BACK
-    if (generateChunkSideMesh(position + glm::vec3(0, 0, 1), BACK_SIDE))
-        _meshUpdates.insert(position + glm::vec3(0, 0, 1));
+    if (generateChunkSideMesh(position + glm::vec2(0, 1), BACK_SIDE))
+        _meshUpdates.insert(position + glm::vec2(0, 1));
     // FRONT
-    if (generateChunkSideMesh(position + glm::vec3(0, 0, -1), FRONT_SIDE))
-        _meshUpdates.insert(position + glm::vec3(0, 0, -1));
+    if (generateChunkSideMesh(position + glm::vec2(0, -1), FRONT_SIDE))
+        _meshUpdates.insert(position + glm::vec2(0, -1));
 }
 
 void Mesher::meshUpdates() {
@@ -359,7 +359,7 @@ void Mesher::meshUpdates() {
 
 }
 
-bool Mesher::generateChunkSideMesh(const glm::vec3 &position, int side) {
+bool Mesher::generateChunkSideMesh(const glm::vec2 &position, int side) {
     if (_chunkMap.find(position) == _chunkMap.end() || _meshMap.find(position) == _meshMap.end())
         return false;
     auto update = false;
@@ -390,12 +390,12 @@ bool Mesher::generateChunkSideMesh(const glm::vec3 &position, int side) {
     return update;
 }
 
-bool Mesher::removeMeshCommonFaces(const glm::vec3 &position, int side) {
-    auto sideToVectorMapping = std::unordered_map<int, glm::vec3>{
-            {LEFT_SIDE,  glm::vec3(-1, 0, 0)},
-            {RIGHT_SIDE, glm::vec3(1, 0, 0)},
-            {FRONT_SIDE, glm::vec3(0, 0, 1)},
-            {BACK_SIDE,  glm::vec3(0, 0, -1)}
+bool Mesher::removeMeshCommonFaces(const glm::vec2 &position, int side) {
+    auto sideToVectorMapping = std::unordered_map<int, glm::vec2>{
+            {LEFT_SIDE,  glm::vec2(-1,  0)},
+            {RIGHT_SIDE, glm::vec2(1, 0)},
+            {FRONT_SIDE, glm::vec2(0, 1)},
+            {BACK_SIDE,  glm::vec2(0, -1)}
     };
     auto aPosition = position;
     auto bPosition = position + sideToVectorMapping.at(side);

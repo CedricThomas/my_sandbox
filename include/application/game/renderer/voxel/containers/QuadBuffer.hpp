@@ -34,6 +34,6 @@ private:
     std::vector<Quad> _quads;
 };
 
-using QuadsMap = std::unordered_map<glm::vec3, QuadBuffer, std::hash<glm::vec3>>;
+using QuadsMap = std::unordered_map<glm::vec2, QuadBuffer, std::hash<glm::vec2>>;
 
 #endif //APP_QUADBUFFER_HPP

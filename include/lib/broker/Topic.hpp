@@ -29,6 +29,8 @@ public:
 
     void publishToSubcriber(const std::string &subscriptionName, const T &data);
 
+    void publishToOtherSubcribers(const std::string &subscriptionName, const T &data);
+
     // Only used by Subscriptions
 
     bool push(const Message<U> &item);

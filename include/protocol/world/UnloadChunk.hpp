@@ -6,7 +6,7 @@
 #define WORLD_UNLOADCHUNK_HPP
 
 #include <memory>
-#include "glm/vec3.hpp"
+#include "glm/vec2.hpp"
 #include "protocol/Event.hpp"
 #include "Events.hpp"
 
@@ -14,7 +14,7 @@ struct UnloadChunk: public Event {
 
     UnloadChunk() = default;
 
-    UnloadChunk(glm::vec3 position);
+    UnloadChunk(glm::vec2 position);
 
     RawEvent serialize() override;
 
@@ -24,7 +24,7 @@ struct UnloadChunk: public Event {
 
     static WorldEvent deserialize(const RawEvent &event);
 
-    glm::vec3 position;
+    glm::vec2 position;
 };
 
 

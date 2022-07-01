@@ -10,17 +10,17 @@
 #include "protocol/world/Events.hpp"
 #include "protocol/game/Events.hpp"
 #include "bundling/BundleAtlas.hpp"
-#include "glm/vec3.hpp"
+#include "glm/vec2.hpp"
 #include "lib/containers/Flat3DArray.hpp"
 
 #define CHUNK_WIDTH 16
 #define CHUNK_HEIGHT 255
 
 struct Chunk {
-    glm::vec3 position;
+    glm::vec2 position;
     Flat3DArray<BlockTemplateBundledID> data;
 };
-using ChunkMap = std::unordered_map<glm::vec3, Chunk, std::hash<glm::vec3>>;
+using ChunkMap = std::unordered_map<glm::vec2, Chunk, std::hash<glm::vec2>>;
 
 class World {
 public:
@@ -30,7 +30,7 @@ public:
 
     [[noreturn]] void start();
 
-    ~World();
+    ~World() = default;
 
 private:
     std::shared_ptr<Topic<WorldEvent, GameEvent>> _worldEventTopic;

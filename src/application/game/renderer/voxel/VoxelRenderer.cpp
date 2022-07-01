@@ -126,7 +126,7 @@ void VoxelRenderer::render(AGame &game) {
                         (*_quadsMap)[position].getVertices());
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(position.x * CHUNK_GAP, position.y, position.z * CHUNK_GAP));
+        model = glm::translate(model, glm::vec3(position.x * CHUNK_GAP, 0, position.y * CHUNK_GAP));
         _shader.setMat4("model", model);
 
         glDrawElements(GL_TRIANGLES, (GLsizei) chunk.second.getIndicesCount(), GL_UNSIGNED_INT, nullptr);

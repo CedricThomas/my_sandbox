@@ -1,6 +1,8 @@
 
 #include "AsyncSubscription.hpp"
 #include "SyncSubscription.hpp"
+#include "Topic.hpp"
+
 
 template<typename T, typename U>
 std::shared_ptr<AsyncSubscription<T, U>> Topic<T, U>::createAsyncSubscribe(const std::string &subscriptionName) {
@@ -52,4 +54,13 @@ Topic<T, U>::createSyncSubscribe(const std::string &subscriptionName, const Sync
 template<typename T, typename U>
 const std::string &Topic<T, U>::getName() const {
     return _name;
+}
+
+template<typename T, typename U>
+void Topic<T, U>::publishToOtherSubcribers(const std::string &subscriptionName, const T &data) {
+    for (auto &subscriber : _subscribers) {
+        if (subscriber.first != subscriptionName) {
+            subscriber.second->push(data);
+        }
+    }
 }

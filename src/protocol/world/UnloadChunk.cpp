@@ -5,7 +5,7 @@
 #include "protocol/world/UnloadChunk.hpp"
 #include "protocol/world/Types.hpp"
 
-UnloadChunk::UnloadChunk(glm::vec3 position) : position(position) {}
+UnloadChunk::UnloadChunk(glm::vec2 position) : position(position) {}
 
 Event::RawEvent UnloadChunk::serialize() {
     Event::RawEvent event(sizeof(position), static_cast<unsigned int>(WorldEventType::UNLOAD_CHUNK));

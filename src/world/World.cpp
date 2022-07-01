@@ -9,16 +9,15 @@
 #include "protocol/world/UnloadChunk.hpp"
 #include "protocol/game/Types.hpp"
 #include "protocol/game/Move.hpp"
+#include "application/game/renderer/voxel/Mesher.hpp"
 
 World::World(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldEventTopic, std::shared_ptr<BundleAtlas> bundleAtlas)
         : _worldEventTopic(std::move(worldEventTopic)), _bundleAtlas(std::move(bundleAtlas)) {}
 
-World::~World() {
-}
-
 [[noreturn]] void World::start() {
     Message<GameEvent> event;
     bool hasEvent;
+    auto radius = 2;
 
     Flat3DArray<BlockTemplateBundledID> chunkData(CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_WIDTH);
     for (auto x = 0; x < CHUNK_WIDTH; x++) {
@@ -35,6 +34,7 @@ World::~World() {
         }
     }
 
+    glm::vec2 oldPosition = glm::vec2(0, 0);
     while (true) {
         hasEvent = _worldEventTopic->tryPull(event);
         if (!hasEvent) {
@@ -45,14 +45,19 @@ World::~World() {
         switch (static_cast<GameEventType>(event.data->getType())) {
             case GameEventType::MOVE:
                 spdlog::info("Received move event");
-                move = static_cast<Move *>(event.data.get());
-                _worldEventTopic->publishToSubcriber(
-                        event.origin,
-                     std::make_shared<LoadChunk>(
-                             move->position,
-                             chunkData
-                     )
-                 );
+                move = dynamic_cast<Move *>(event.data.get());
+                auto newPosition = glm::vec2(move->position.x / CHUNK_GAP, move->position.y / CHUNK_GAP);
+                if (newPosition != oldPosition) {
+                    spdlog::info("Moving from ({},{}) to ({},{})", oldPosition.x, oldPosition.y, newPosition.x, newPosition.y);
+                    _worldEventTopic->publishToSubcriber(
+                            event.origin,
+                            std::make_shared<LoadChunk>(
+                                    newPosition,
+                                    chunkData
+                            )
+                    );
+                    oldPosition = newPosition;
+                }
                 break;
         }
     }

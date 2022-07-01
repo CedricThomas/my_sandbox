@@ -5,7 +5,7 @@
 #ifndef WORLD_LOADCHUNK_HPP
 #define WORLD_LOADCHUNK_HPP
 
-#include "glm/vec3.hpp"
+#include "glm/vec2.hpp"
 #include "protocol/Event.hpp"
 #include "bundling/Bundle.hpp"
 #include "lib/containers/Flat3DArray.hpp"
@@ -13,7 +13,7 @@
 
 struct LoadChunk: public Event {
 
-    LoadChunk(const glm::vec3 &position, const Flat3DArray<BlockTemplateBundledID> &data);
+    LoadChunk(const glm::vec2 &position, const Flat3DArray<BlockTemplateBundledID> &data);
 
     LoadChunk() = default;
 
@@ -25,7 +25,7 @@ struct LoadChunk: public Event {
 
     static WorldEvent deserialize(const RawEvent &event);
 
-    glm::vec3 position;
+    glm::vec2 position;
     Flat3DArray<BlockTemplateBundledID> data;
 };
 
