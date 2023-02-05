@@ -57,14 +57,14 @@ static void start(std::shared_ptr<BundleAtlas> &bundleAtlas, std::shared_ptr<Tex
         spdlog::debug("Listening to the server events...");
         client.listenServer();
     });
-    spdlog::debug("Starting the game client");
     application->start();
+    client.disconnect();
     pool.shutdown();
 }
 
 
 int main() {
-    spdlog::set_level(spdlog::level::info); // Set global log level to debug
+    spdlog::set_level(spdlog::level::debug); // Set global log level to debug
     auto bundleAtlas = std::make_shared<BundleAtlas>();
     auto textureAtlas = std::make_shared<TextureAtlas>();
     configure(bundleAtlas, textureAtlas);

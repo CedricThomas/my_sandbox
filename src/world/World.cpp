@@ -24,9 +24,6 @@ World::World(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldEventTopic, std:
     for (auto x = 0; x < CHUNK_WIDTH; x++) {
         for (auto y = 0; y < CHUNK_HEIGHT / 10; y++) {
             for (auto z = 0; z < CHUNK_WIDTH; z++) {
-                if ((x + y + z) % 2 == 0) {
-                    continue;
-                }
                 if (y == CHUNK_HEIGHT / 10 - 1) {
                     chunkData.set(x, y, z, BlockTemplateBundledID(DEFAULT_BUNDLE_ID, 2));
                 } else if (y < CHUNK_HEIGHT / 10 - 5) {

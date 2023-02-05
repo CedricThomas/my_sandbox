@@ -9,6 +9,7 @@
 #include "protocol/world/LoadChunk.hpp"
 #include "protocol/world/UnloadChunk.hpp"
 #include "protocol/game/Move.hpp"
+#include "protocol/game/Leave.hpp"
 #include "protocol/game/Join.hpp"
 
 Game::Game(
@@ -34,18 +35,26 @@ void Game::onInit() {
 
 void Game::onInput() {
     auto window = _application->getWindow();
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        _worldEventSubscription->pushToTopic(std::make_shared<Leave>());
+    }
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         _camera.processKeyboard(Camera::Movement::FORWARD, _tracker.getFrameDelta());
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        _worldEventSubscription->pushToTopic(std::make_shared<Move>(_camera.getPosition()));
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         _camera.processKeyboard(Camera::Movement::BACKWARD, _tracker.getFrameDelta());
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        _worldEventSubscription->pushToTopic(std::make_shared<Move>(_camera.getPosition()));
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         _camera.processKeyboard(Camera::Movement::LEFT, _tracker.getFrameDelta());
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        _worldEventSubscription->pushToTopic(std::make_shared<Move>(_camera.getPosition()));
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         _camera.processKeyboard(Camera::Movement::RIGHT, _tracker.getFrameDelta());
-    _worldEventSubscription->pushToTopic(std::make_shared<Move>(_camera.getPosition()));
+        _worldEventSubscription->pushToTopic(std::make_shared<Move>(_camera.getPosition()));
+    }
 }
 
 void Game::onRender() {

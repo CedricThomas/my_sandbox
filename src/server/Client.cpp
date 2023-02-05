@@ -46,9 +46,13 @@ Client::Client(
 }
 
 void Client::listenServer() {
+    int status;
     ENetEvent event{};
     Event::RawEvent rawEvent{};
-    while (enet_host_service(_host, &event, 3000) > 0) {
+    while (!_disconnected && (status = enet_host_service(_host, &event, 10000)) >= 0) {
+        if (status == 0) {
+            continue;
+        }
         switch (event.type) {
             case ENET_EVENT_TYPE_RECEIVE:
                 // receive events from the world server
@@ -60,17 +64,17 @@ void Client::listenServer() {
                 enet_packet_destroy(event.packet);
                 break;
             case ENET_EVENT_TYPE_DISCONNECT:
-                puts("Disconnection succeeded.");
+                spdlog::warn("Disconnected.");
                 _disconnected = true;
-                return;
+                break;
             case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT:
+                spdlog::warn("Timeout.");
                 _disconnected = true;
-                return;
+                break;
             default:
                 break;
         }
     }
-
 }
 
 Client::~Client() {
@@ -85,7 +89,10 @@ void Client::listenGame() {
         // send game events to the world server
         Message<GameEvent> event;
         spdlog::debug("Pulling events...");
-        _worldTopic->pull(event);
+        if (!_worldTopic->tryPull(event)) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+            continue;
+        }
         auto rawEvent = event.data->serialize();
         auto packet = enet_packet_create(
                 rawEvent.getData(),
@@ -96,4 +103,9 @@ void Client::listenGame() {
         enet_peer_send(_peer, 0, packet);
         enet_host_flush(_host);
     }
+    spdlog::debug("Stop listen on game");
+}
+
+void Client::disconnect() {
+    _disconnected = true;
 }

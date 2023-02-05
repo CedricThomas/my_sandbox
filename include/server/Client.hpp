@@ -21,6 +21,7 @@ public:
     virtual ~Client();
     void listenServer();
     void listenGame();
+    void disconnect();
 
 private:
     std::shared_ptr<Topic<WorldEvent, GameEvent>> _worldTopic;

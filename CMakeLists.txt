@@ -33,6 +33,9 @@ set(PROTOCOL_SRC
 
         src/protocol/game/Join.cpp
         include/protocol/game/Join.hpp
+
+        src/protocol/game/Leave.cpp
+        include/protocol/game/Leave.hpp
 )
 
 set(BUNDLING_SRC

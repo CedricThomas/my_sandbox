@@ -10,6 +10,7 @@
 enum class GameEventType : EventType {
     MOVE = 100,
     JOIN = 101,
+    LEAVE = 102,
 };
 
 #endif //APP_TYPES_HPP
