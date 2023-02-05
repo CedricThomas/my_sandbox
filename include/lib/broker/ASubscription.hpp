@@ -39,7 +39,7 @@ public:
 
 protected:
     std::string _name;
-    std::shared_ptr<Topic<T, U>> _topic;
+    Topic<T, U> *_topic;
 };
 
 #include "ASubscription.tpp"

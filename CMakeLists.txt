@@ -152,7 +152,7 @@ set(COMMON_LIB_SRC
         include/lib/resources/ResourceNotFound.hpp
 )
 
-set(APPLICATION_SRC
+set(APPLICATION_BIN_SRC
         ${PROTOCOL_SRC}
         ${BUNDLING_SRC}
         ${WORLD_SRC}
@@ -163,13 +163,24 @@ set(APPLICATION_SRC
         src/app.cpp
 )
 
-set(SERVER_SRC
+set(SERVER_BIN_SRC
         ${PROTOCOL_SRC}
         ${BUNDLING_SRC}
         ${WORLD_SRC}
         ${SERVER_SRC}
         ${COMMON_LIB_SRC}
         src/server.cpp
+)
+
+set(DEBUG_SRC
+        ${PROTOCOL_SRC}
+        ${BUNDLING_SRC}
+        ${WORLD_SRC}
+        ${APPLICATION_SRC}
+        ${GRAPHIC_LIB_SRC}
+        ${SERVER_SRC}
+        ${COMMON_LIB_SRC}
+        src/debug.cpp
 )
 
 # Setup OPENGL
@@ -189,11 +200,15 @@ include_directories(lib/spdlog/include)
 include_directories(lib/glm)
 
 # Declaring the targets
-add_executable(app ${APPLICATION_SRC})
+add_executable(app ${APPLICATION_BIN_SRC})
 target_link_libraries(app glfw)
 target_link_libraries(app OpenGL::GL)
 target_link_libraries(app spdlog::spdlog)
 
+add_executable(debug ${DEBUG_SRC})
+target_link_libraries(debug glfw)
+target_link_libraries(debug OpenGL::GL)
+target_link_libraries(debug spdlog::spdlog)
 
-add_executable(server ${SERVER_SRC})
+add_executable(server ${SERVER_BIN_SRC})
 target_link_libraries(server spdlog::spdlog)
