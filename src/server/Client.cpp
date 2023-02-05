@@ -27,7 +27,7 @@ Client::Client(
     }
 
     ENetAddress enetAddress;
-    /* Connect to some.server.net:1234. */
+    /* Connect to the remote adress. */
     enet_address_set_host(&enetAddress, address.c_str());
     enetAddress.port = port;
     /* Initiate the connection, allocating the two channels 0 and 1. */
@@ -53,7 +53,7 @@ void Client::listenServer() {
             case ENET_EVENT_TYPE_RECEIVE:
                 // receive events from the world server
                 rawEvent = Event::RawEvent(event.packet->dataLength, event.packet->data);
-                spdlog::info("Receiving world event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
+                spdlog::debug("Receiving world event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
                 _worldTopic->publishToSubcribers(
                         WorldEventsDeserializer.at(rawEvent.getType())(rawEvent)
                 );
@@ -84,7 +84,7 @@ void Client::listenGame() {
     while (!_disconnected) {
         // send game events to the world server
         Message<GameEvent> event;
-        spdlog::info("Pulling events...");
+        spdlog::debug("Pulling events...");
         _worldTopic->pull(event);
         auto rawEvent = event.data->serialize();
         auto packet = enet_packet_create(
@@ -92,7 +92,7 @@ void Client::listenGame() {
                 rawEvent.getSize(),
                 ENET_PACKET_FLAG_RELIABLE
         );
-        spdlog::info("Sending game event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
+        spdlog::debug("Sending game event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
         enet_peer_send(_peer, 0, packet);
         enet_host_flush(_host);
     }

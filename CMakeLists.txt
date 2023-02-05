@@ -30,6 +30,9 @@ set(PROTOCOL_SRC
 
         src/protocol/game/Move.cpp
         include/protocol/game/Move.hpp
+
+        src/protocol/game/Join.cpp
+        include/protocol/game/Join.hpp
 )
 
 set(BUNDLING_SRC

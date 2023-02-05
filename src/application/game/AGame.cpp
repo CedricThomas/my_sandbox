@@ -2,11 +2,12 @@
 // Created by arzad on 26/04/2022.
 //
 #include "application/game/AGame.hpp"
+#include "application/game/renderer/voxel/Mesher.hpp"
 
 AGame::AGame(std::shared_ptr<Application> application)
         : _application(std::move(application)),
           _tracker(),
-          _camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
+          _camera(glm::vec3(CHUNK_GAP / 2.0f, (float)CHUNK_HEIGHT * (float)VERTEX_GAP / 10.0f, CHUNK_GAP / 2.0f)) {}
 
 const Camera &AGame::getCamera() const {
     return _camera;

@@ -33,7 +33,7 @@ static void start(std::shared_ptr<BundleAtlas> &bundleAtlas) {
 }
 
 int main() {
-    spdlog::set_level(spdlog::level::debug); // Set global log level to debug
+    spdlog::set_level(spdlog::level::info); // Set global log level to debug
     auto bundleAtlas = std::make_shared<BundleAtlas>();
     configure(bundleAtlas);
     start(bundleAtlas);

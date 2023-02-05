@@ -9,6 +9,7 @@
 #include "protocol/world/LoadChunk.hpp"
 #include "protocol/world/UnloadChunk.hpp"
 #include "protocol/game/Move.hpp"
+#include "protocol/game/Join.hpp"
 
 Game::Game(
         const std::shared_ptr<Application> &application,
@@ -22,7 +23,9 @@ _textureAtlas(textureAtlas),
 _bundleAtlas(bundleAtlas),
 _worldEventSubscription(worldEventSubscription),
 _mesher(bundleAtlas, textureAtlas, _quadsMap),
-_renderers() {}
+_renderers() {
+    _worldEventSubscription->pushToTopic(std::make_shared<Join>(_camera.getPosition()));
+}
 
 void Game::onInit() {
     _renderers.emplace_back(std::make_unique<SkyboxRenderer>());
@@ -61,6 +64,7 @@ void Game::onRender() {
                         loadChunk->data,
                 });
                 _mesher.meshUpdates();
+                spdlog::info("MOVED TO ({},{})", loadChunk->position.x, loadChunk->position.y);
                 break;
             case WorldEventType::UNLOAD_CHUNK:
                 unloadChunk = dynamic_cast<UnloadChunk *>(worldEvent.get());

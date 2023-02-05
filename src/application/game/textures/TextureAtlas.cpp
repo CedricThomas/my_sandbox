@@ -32,7 +32,7 @@ void TextureAtlas::loadBundleBlockTextures(const Bundle &bundle) {
         } else if (_width != width) {
             throw std::runtime_error("Texture: " + blockTexture.path + " has different width");
         }
-        spdlog::info("Loading texture {} from bundle {}", blockTexture.path, bundle.ID);
+        spdlog::debug("Loading texture {} from bundle {}", blockTexture.path, bundle.ID);
         _texturesLocations.insert({
                                           std::make_pair(bundle.ID, blockTexture.basename),
                                           {

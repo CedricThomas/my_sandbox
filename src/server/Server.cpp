@@ -25,7 +25,7 @@ Server::Server(std::shared_ptr<Topic<WorldEvent, GameEvent>> worldTopic, int por
 void Server::start() {
     ENetEvent event;
     Event::RawEvent rawEvent;
-    spdlog::info("start server");
+    spdlog::debug("start server");
     while (enet_host_service(_host, &event, 300) >= 0) {
         switch (event.type) {
             case ENET_EVENT_TYPE_CONNECT:
@@ -38,16 +38,16 @@ void Server::start() {
                                     rawEvent.getSize(),
                                     ENET_PROTOCOL_COMMAND_SEND_RELIABLE
                             );
-                            spdlog::info("Sending World event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
+                            spdlog::debug("Sending World event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
                             return enet_peer_send(event.peer, 0, packet) == 0;
                         }
                 ).get();
-                spdlog::info("A new client connected");
+                spdlog::debug("A new client connected");
                 break;
             case ENET_EVENT_TYPE_RECEIVE:
                 // receive events from the clients and send them to the world
                 rawEvent = Event::RawEvent(event.packet->dataLength, event.packet->data);
-                spdlog::info("Receiving Game event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
+                spdlog::debug("Receiving Game event of {} bytes of type {}", rawEvent.getSize(), rawEvent.getType());
                 ((SyncSubscription<WorldEvent, GameEvent> *)event.peer->data)->pushToTopic(
                         GameEventsDeserializer.at(rawEvent.getType())(rawEvent)
                 );
@@ -57,14 +57,14 @@ void Server::start() {
                         ((SyncSubscription<WorldEvent, GameEvent> *)event.peer->data)->getName()
                 );
                 event.peer->data = nullptr;
-                spdlog::info("A client disconnected");
+                spdlog::debug("A client disconnected");
                 break;
             case ENET_EVENT_TYPE_DISCONNECT_TIMEOUT:
                 _worldTopic->removeSubscriber(
                         ((SyncSubscription<WorldEvent, GameEvent> *)event.peer->data)->getName()
                 );
                 event.peer->data = nullptr;
-                spdlog::info("A client disconnected by timeout");
+                spdlog::debug("A client disconnected by timeout");
                 break;
             case ENET_EVENT_TYPE_NONE:
                 break;
